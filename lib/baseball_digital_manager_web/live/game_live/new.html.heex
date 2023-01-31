@@ -1,0 +1,137 @@
+<div class="new-game-screen">
+  <div class="grid grid-cols-2">
+    <div>New game</div>
+    <div>
+      <.link navigate={~p"/library/#{@library_id}"}>Return to Standings</.link>
+    </div>
+  </div>
+
+  <div class="border-2 p-2">
+    <.simple_form :let={f} for={:game_form} phx-change="validate-form" phx-submit="save-game">
+      Select teams for game:
+      <div class="grid grid-cols-2 p-2">
+        <div class="px-2">
+          Visitor:
+          <.input
+            field={{f, :visitor_team}}
+            options={@teams}
+            value={@selected_visitor_team}
+            type="select"
+            prompt="[SELECT A TEAM]"
+            class="select select-primary w-full max-w-xs"
+            phx-change="change-visitor-team"
+          />
+
+          <div>
+            <%= if Enum.count(@visitor_players) > 0 do %>
+              Players
+              <table class="table-auto border-spacing-px">
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <th class="text-left p-1">Name</th>
+                    <th>Position</th>
+                    <th>Bats</th>
+                    <th>Throws</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%= for player <- @visitor_players do %>
+                    <tr>
+                      <td>
+                        <.input
+                          type="checkbox"
+                          id={"select-player-#{player.id}"}
+                          name={"select-player-#{player.id}"}
+                          value={player.is_selected}
+                          class="p-1 checkbox checkbox-primary"
+                          phx-click="toggle-player"
+                          phx-value-team="visitor"
+                          phx-value-id={player.id}
+                        />
+                      </td>
+                      <td class="p-1">
+                        <%= player.last_name %> <%= player.first_name %>
+                      </td>
+                      <td class="p-1">
+                        <%= Atom.to_string(player.main_position) |> String.capitalize() %>
+                      </td>
+                      <td class="p-1">
+                        <%= Atom.to_string(player.bats) |> String.capitalize() %>
+                      </td>
+                      <td class="p-1">
+                        <%= Atom.to_string(player.throws) |> String.capitalize() %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% end %>
+          </div>
+        </div>
+        <div class="px-2">
+          Local:
+          <.input
+            field={{f, :local_team}}
+            options={@teams}
+            value={@selected_local_team}
+            type="select"
+            class="select w-full max-w-xs select-primary"
+            phx-change="change-local-team"
+            prompt="[SELECT A TEAM]"
+          />
+          <div>
+            <%= if Enum.count(@local_players) > 0 do %>
+              Players
+              <table class="table-auto border-spacing-px">
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <th class="text-left p-1">Name</th>
+                    <th>Position</th>
+                    <th>Bats</th>
+                    <th>Throws</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%= for player <- @local_players do %>
+                    <tr>
+                      <td>
+                        <.input
+                          type="checkbox"
+                          id={"select-player-#{player.id}"}
+                          name={"select-player-#{player.id}"}
+                          value={player.is_selected}
+                          class="p-1 checkbox checkbox-primary"
+                          phx-click="toggle-player"
+                          phx-value-team="local"
+                          phx-value-id={player.id}
+                        />
+                      </td>
+                      <td class="p-1">
+                        <%= player.last_name %> <%= player.first_name %>
+                      </td>
+                      <td class="p-1">
+                        <%= Atom.to_string(player.main_position) |> String.capitalize() %>
+                      </td>
+                      <td class="p-1">
+                        <%= Atom.to_string(player.bats) |> String.capitalize() %>
+                      </td>
+                      <td class="p-1">
+                        <%= Atom.to_string(player.throws) |> String.capitalize() %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="py-2 text-center">
+        <button class="btn btn-primary">Continue</button>
+        <button class="btn btn-secondary">Cancel</button>
+      </div>
+    </.simple_form>
+  </div>
+</div>

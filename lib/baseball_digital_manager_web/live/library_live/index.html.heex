@@ -1,0 +1,61 @@
+<div class="libraries-home p-4">
+  <h1><%= @library.name %></h1>
+
+  <div class="leagues">
+    <%= for league <- @leagues do %>
+      <div class="card">
+        <div class="card-header">
+          <%= league.name %>
+        </div>
+        <div class="border-2 text-white p-2 bg-blue-500 rounded-md w-32 text-center my-2">
+          <.link navigate={~p"/game/#{@library.id}/new"}>New game</.link>
+        </div>
+        <div class="border-2 p-2 my-2">
+          <%= for division <- league.divisions do %>
+            <div class="border-2 p-2 my-2">
+              <div class="card-header">
+                <%= division.name %>
+              </div>
+              <div class="border-2">
+                <table class="border border-separate border-slate-500 w-full">
+                  <thead>
+                    <tr>
+                      <th class="w-2/4">Team</th>
+                      <th class="text-center">Wins</th>
+                      <th class="text-center">Losses</th>
+                      <th class="text-center">Pct</th>
+                      <th class="text-center">GB</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for team <- division.teams do %>
+                      <tr>
+                        <td class="w-50">
+                          <.link navigate={~p"/team/#{@library.id}/#{team.id}"}>
+                            <%= team.name %>
+                          </.link>
+                        </td>
+                        <td class="text-center">
+                          <%= team.current_season_wins %>
+                        </td>
+                        <td class="text-center">
+                          <%= team.current_season_losses %>
+                        </td>
+                        <td class="text-center">
+                          <%= 0 %>
+                        </td>
+                        <td class="text-center">
+                          <%= 0 %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,60 @@
+<div class="edit-game-screen">
+  <div class="grid grid-cols-2">
+    <div>Game</div>
+    <div>
+      <.link navigate={~p"/library/#{@library.id}"}>Return to Standings</.link>
+    </div>
+  </div>
+
+  <div class="card w-100 bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title"><%= @game.visitor_team.name %></h2>
+
+      <div class="overflow-x-auto"></div>
+      <table class="table table-compact w-full">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Pos</th>
+            <th>AB</th>
+            <th>H</th>
+            <th>2B</th>
+            <th>3B</th>
+            <th>HR</th>
+            <th>R</th>
+            <th>RBI</th>
+            <th>BB</th>
+            <th>IBB</th>
+            <th>SO</th>
+            <th>SB</th>
+            <th>CS</th>
+            <th>SH</th>
+            <th>SF</th>
+            <th>GIDP</th>
+            <th>HBP</th>
+            <th>A</th>
+            <th>PO</th>
+            <th>E</th>
+            <th>PB</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for gp <- @visitor_players do %>
+            <tr>
+              <td><.display_full_name player={gp.player} /></td>
+              <td><%= gp.position %></td>
+              <td>
+                <.input
+                  type="number"
+                  id={"games-visitor-player-#{gp.id}"}
+                  name={"games-visitor-player-#{gp.id}"}
+                  value={gp.batting_stats.at_bats}
+                />
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+last_name,first_name,bats,throws,team_id,main_position,pitcher_type
+Wilson,Jud,left,left,1,firstbaseman,
+Mackey,Biz,switch,right,1,catcher,
+Johnson,Oscar Heavy,right,right,1,leftfielder,
+Smith,Chino,left,left,1,rightfielder,
+Creacy,Dewey,right,right,1,thirdbaseman,
+Lundy,Dick,switch,right,1,shortstop,
+Taylor,Candy Jim,right,right,1,thirdbaseman,
+Bell,Cool Papa,switch,right,1,centerfielder,
+Warfield,Frank,right,right,1,secondbaseman,
+Winters,Nip,left,left,1,pitcher,starter
+Trent,Ted,right,right,1,pitcher,starter
+Brown,Dave,left,left,1,pitcher,starter
+Streeter,Sam,left,left,1,pitcher,starter
+Dihigo,Martin,right,right,1,pitcher,reliever
+Powell,Willie,right,right,1,pitcher,reliever
+O'Neil,Buck,right,right,1,firstbaseman,
+Poles,Spot,switch,right,1,centerfielder,
+Palm,Spoony,right,right,1,catcher,
+Johnson,Homerun,right,right,3,shortstop,
+Monroe,Bill,right,right,3,thirdbaseman,
+Blackwell,Charles,left,left,3,rightfielder,
+Stearnes,Turkey,left,left,3,centerfielder,
+Taylor,Ben,left,left,3,firstbaseman,
+Serrell,Bonnie,left,right,3,secondbaseman,
+Santop,Louis,left,left,3,catcher,
+Benjamin,Jerry,switch,right,3,centerfielder,
+Lyons,Jimmie,left,left,3,leftfielder,
+Paige,Satchel,right,right,3,pitcher,starter
+Matlock,Leroy,left,left,3,pitcher,starter
+Brewer,Chet,right,right,3,pitcher,starter
+McDonald,Webster,right,right,3,pitcher,starter
+Radcliffe,Doubleduty,right,right,3,pitcher,reliever
+Jones,Slim,left,left,3,pitcher,reliever
+Marcelle,Ghost,right,right,3,thirdbaseman,
+Donaldson,John,left,left,3,centerfielder,
+Petway,Bruce,switch,right,3,catcher,
