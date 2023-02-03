@@ -14,6 +14,7 @@ defmodule BaseballDigitalManager.Repo.Migrations.CreatePlayers do
       add :debut_date, :date
       add :team_id, references(:teams, on_delete: :nothing)
       add :main_position, :string
+      add :secondary_position, :string, null: true
       add :pitcher_type, :string
 
       timestamps()

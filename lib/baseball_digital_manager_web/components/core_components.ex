@@ -288,7 +288,11 @@ defmodule BaseballDigitalManagerWeb.CoreComponents do
     assigns = assign_new(assigns, :checked, fn -> input_equals?(assigns.value, "true") end)
 
     ~H"""
-    <label phx-feedback-for={@name} class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
+    <label
+      phx-feedback-for={@name}
+      class="flex items-center gap-4 text-sm leading-6 text-zinc-600"
+      style="display: block;"
+    >
       <input type="hidden" name={@name} value="false" />
       <input
         type="checkbox"
@@ -349,6 +353,15 @@ defmodule BaseballDigitalManagerWeb.CoreComponents do
   end
 
   def input(assigns) do
+    class =
+      if Map.has_key?(assigns.rest, :class) && String.length(assigns.rest.class) > 0 do
+        assigns.rest.class
+      else
+        "rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
+      end
+
+    assigns = assign_new(assigns, :class, fn -> class end)
+
     ~H"""
     <div phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
@@ -358,10 +371,7 @@ defmodule BaseballDigitalManagerWeb.CoreComponents do
         id={@id || @name}
         value={@value}
         class={[
-          input_border(@errors),
-          "mt-2 block w-full rounded-lg border-zinc-300 py-[7px] px-[11px]",
-          "text-zinc-900 focus:outline-none focus:ring-4 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400 phx-no-feedback:focus:ring-zinc-800/5"
+          @class
         ]}
         {@rest}
       />
@@ -596,6 +606,44 @@ defmodule BaseballDigitalManagerWeb.CoreComponents do
   def display_full_name(assigns) do
     ~H"""
     <%= @player.first_name %> <%= @player.last_name %>
+    """
+  end
+
+  def display_batter_avg(assigns) do
+    ~H"""
+    <%= String.replace(
+      Decimal.to_string(
+        Decimal.round(
+          Decimal.div(Decimal.new(@batting_stats.hits), Decimal.new(@batting_stats.at_bats)),
+          3
+        )
+      ),
+      "0.",
+      "."
+    ) %>
+    """
+  end
+
+  def display_pitching_IP(assigns) do
+    ~H"""
+    <%= Decimal.round(Decimal.div(@pitching_stats.outs_pitched, 3), 1) %>
+    """
+  end
+
+  def display_pitching_era(assigns) do
+    ~H"""
+    <%= Decimal.to_string(
+      Decimal.round(
+        Decimal.mult(
+          9,
+          Decimal.div(
+            @pitching_stats.earned_runs_allowed,
+            Decimal.div(@pitching_stats.outs_pitched, 3)
+          )
+        ),
+        2
+      )
+    ) %>
     """
   end
 

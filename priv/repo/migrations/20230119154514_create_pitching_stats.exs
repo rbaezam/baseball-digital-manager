@@ -4,9 +4,11 @@ defmodule BaseballDigitalManager.Repo.Migrations.CreatePitchingStats do
   def change do
     create table(:pitching_stats) do
       add :games, :integer
-      add :games_finished, :integer
+      add :complete_games, :integer
       add :games_started, :integer
       add :closed_games, :integer
+      add :wins, :integer
+      add :losses, :integer
       add :shutouts, :integer
       add :shared_shutouts, :integer
       add :saves, :integer

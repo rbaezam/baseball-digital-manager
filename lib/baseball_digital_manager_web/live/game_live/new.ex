@@ -6,7 +6,12 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
 
   @impl true
   def mount(%{"library_id" => library_id}, _params, socket) do
-    teams = Teams.get_teams_from_library(library_id) |> Enum.map(&{&1.name, &1.id})
+    teams =
+      Teams.get_teams_from_library(library_id)
+      |> Enum.map(&{&1.nick_name, &1.id})
+
+    lineup_positions = ["", 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
     visitor_players = []
     local_players = []
 
@@ -23,6 +28,7 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
       |> assign(:selected_visitor_team, "")
       |> assign(:visitor_players, visitor_players)
       |> assign(:local_players, local_players)
+      |> assign(:lineup_positions, lineup_positions)
 
     {:ok, assigns}
   end
@@ -78,9 +84,12 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
       library_id: socket.assigns.library_id
     }
 
-    Games.create(attr)
+    {game, _players} = Games.create_game(attr)
 
-    {:noreply, socket}
+    {:noreply,
+     socket
+     |> put_flash(:info, "Game created.")
+     |> push_redirect(to: ~p"/game/#{socket.assigns.library_id}/edit/#{game.id}")}
   end
 
   def handle_event("change-visitor-team", %{"game_form" => form}, socket) do
@@ -193,6 +202,44 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
       |> Enum.map(fn item ->
         if item.id == String.to_integer(player_id) do
           item |> Map.put(:is_selected, false)
+        else
+          item
+        end
+      end)
+
+    assigns = socket |> assign(:local_players, local_players)
+    {:noreply, assigns}
+  end
+
+  def handle_event(
+        "change-visitor-lineup-position",
+        %{"id" => player_id, "value" => lineup_position},
+        socket
+      ) do
+    visitor_players =
+      socket.assigns.visitor_players
+      |> Enum.map(fn item ->
+        if item.id == String.to_integer(player_id) do
+          item |> Map.put(:lineup_position, String.to_integer(lineup_position))
+        else
+          item
+        end
+      end)
+
+    assigns = socket |> assign(:visitor_players, visitor_players)
+    {:noreply, assigns}
+  end
+
+  def handle_event(
+        "change-local-lineup-position",
+        %{"id" => player_id, "value" => lineup_position},
+        socket
+      ) do
+    local_players =
+      socket.assigns.local_players
+      |> Enum.map(fn item ->
+        if item.id == String.to_integer(player_id) do
+          item |> Map.put(:lineup_position, String.to_integer(lineup_position))
         else
           item
         end

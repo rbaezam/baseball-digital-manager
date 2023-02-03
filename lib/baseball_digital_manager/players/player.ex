@@ -12,6 +12,7 @@ defmodule BaseballDigitalManager.Players.Player do
     field :bats, Ecto.Enum, values: [:right, :left, :switch]
     field :throws, Ecto.Enum, values: [:right, :left]
     field :weight, :integer
+    field :lineup_position, :integer, default: 0
 
     field :main_position, Ecto.Enum,
       values: [
@@ -24,6 +25,25 @@ defmodule BaseballDigitalManager.Players.Player do
         :leftfielder,
         :centerfielder,
         :rightfielder,
+        :infielder,
+        :outfielder,
+        :designated_hitter
+      ]
+
+    field :secondary_position, Ecto.Enum,
+      values: [
+        :none,
+        :pitcher,
+        :catcher,
+        :firstbaseman,
+        :secondbaseman,
+        :thirdbaseman,
+        :shortstop,
+        :leftfielder,
+        :centerfielder,
+        :rightfielder,
+        :infielder,
+        :outfielder,
         :designated_hitter
       ]
 
@@ -52,7 +72,8 @@ defmodule BaseballDigitalManager.Players.Player do
       :debut_date,
       :main_position,
       :pitcher_type,
-      :team_id
+      :team_id,
+      :lineup_position
     ])
     |> validate_required([
       :last_name,

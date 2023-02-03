@@ -1,10 +1,200 @@
 <div class="team-home p-4 border-2 w-full">
   <div class="grid grid-cols-2">
-    <div>
-      <%= @team.name %>
-    </div>
+    <div></div>
     <div>
       <.link navigate={~p"/library/#{@library_id}"}>Return to Standings</.link>
+    </div>
+  </div>
+
+  <div class="card w-100 bg-base-100 shadow-xl mb-4">
+    <div class="card-body">
+      <h2 class="card-title">
+        <%= @team.name %> <%= @team.nick_name %>
+      </h2>
+
+      <div class="overflow-x-auto"></div>
+      <table class="table table-compact table-zebra w-full">
+        <thead>
+          <tr>
+            <th>Batters</th>
+            <th>B</th>
+            <th>Pos</th>
+            <th>AB</th>
+            <th>H</th>
+            <th>R</th>
+            <th>AVG</th>
+            <th>HR</th>
+            <th>RBI</th>
+            <th>SB</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for player <- @batters do %>
+            <tr>
+              <td>
+                <%= player.first_name %> <%= player.last_name %>
+              </td>
+              <td>
+                <%= player.bats %>
+              </td>
+              <td>
+                <%= player.main_position %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.at_bats
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.hits
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.runs
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil && player.batting_stats.at_bats > 0 do
+                  display_batter_avg(player)
+                else
+                  ".000"
+                end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.homeruns
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.rbis
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.stolen_bases
+                else
+                  0
+                end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <div class="overflow-x-auto"></div>
+      <table class="table table-compact table-zebra w-full">
+        <thead>
+          <tr>
+            <th>Pitchers</th>
+            <th>T</th>
+            <th>G</th>
+            <th>GS</th>
+            <th>CG</th>
+            <th>W</th>
+            <th>L</th>
+            <th>S</th>
+            <th>IP</th>
+            <th>ERA</th>
+            <th>BB</th>
+            <th>SO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for player <- @pitchers do %>
+            <tr>
+              <td>
+                <%= player.first_name %> <%= player.last_name %>
+              </td>
+              <td>
+                <%= player.throws %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.games
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.games_started
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.complete_games
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.wins
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.losses
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.saves
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  display_pitching_IP(player)
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil && player.pitching_stats.outs_pitched > 0 do
+                  display_pitching_era(player)
+                else
+                  "0.00"
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.base_on_balls
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.strikeouts
+                else
+                  0
+                end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

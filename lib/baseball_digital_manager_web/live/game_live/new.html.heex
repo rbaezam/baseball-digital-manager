@@ -30,6 +30,7 @@
                   <tr>
                     <th>&nbsp;</th>
                     <th class="text-left p-1">Name</th>
+                    <th>Lineup</th>
                     <th>Position</th>
                     <th>Bats</th>
                     <th>Throws</th>
@@ -52,6 +53,19 @@
                       </td>
                       <td class="p-1">
                         <%= player.last_name %> <%= player.first_name %>
+                      </td>
+                      <td class="p-1">
+                        <.input
+                          id={"select-player-lineup-#{player.id}"}
+                          name={"select-player-lineup-#{player.id}"}
+                          options={@lineup_positions}
+                          value={player.lineup_position}
+                          type="select"
+                          errors={[]}
+                          class="select select-primary w-full max-w-xs select-sm"
+                          phx-blur="change-visitor-lineup-position"
+                          phx-value-id={player.id}
+                        />
                       </td>
                       <td class="p-1">
                         <%= Atom.to_string(player.main_position) |> String.capitalize() %>
@@ -110,6 +124,19 @@
                       </td>
                       <td class="p-1">
                         <%= player.last_name %> <%= player.first_name %>
+                      </td>
+                      <td class="p-1">
+                        <.input
+                          id={"select-player-lineup-#{player.id}"}
+                          name={"select-player-lineup-#{player.id}"}
+                          options={@lineup_positions}
+                          value={player.lineup_position}
+                          type="select"
+                          errors={[]}
+                          class="select select-primary w-full max-w-xs select-sm"
+                          phx-blur="change-local-lineup-position"
+                          phx-value-id={player.id}
+                        />
                       </td>
                       <td class="p-1">
                         <%= Atom.to_string(player.main_position) |> String.capitalize() %>

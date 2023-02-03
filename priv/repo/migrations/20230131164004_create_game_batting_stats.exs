@@ -3,21 +3,22 @@ defmodule BaseballDigitalManager.Repo.Migrations.CreateGameBattingStats do
 
   def change do
     create table(:game_batting_stats) do
-      add :at_bats, :integer, defaults: 0, null: false
-      add :hits, :integer, defaults: 0, null: false
-      add :doubles, :integer, defaults: 0, null: false
-      add :triples, :integer, defaults: 0, null: false
-      add :homeruns, :integer, defaults: 0, null: false
-      add :runs, :integer, defaults: 0, null: false
-      add :rbis, :integer, defaults: 0, null: false
-      add :base_on_balls, :integer, defaults: 0, null: false
-      add :strikeouts, :integer, defaults: 0, null: false
-      add :stolen_bases, :integer, defaults: 0, null: false
-      add :caught_stealing, :integer, defaults: 0, null: false
-      add :sacrifice_hits, :integer, defaults: 0, null: false
-      add :sacrifice_flies, :integer, defaults: 0, null: false
-      add :gidp, :integer, defaults: 0, null: false
-      add :hbp, :integer, defaults: 0, null: false
+      add :at_bats, :integer, defaults: 0
+      add :hits, :integer, defaults: 0
+      add :doubles, :integer, defaults: 0
+      add :triples, :integer, defaults: 0
+      add :homeruns, :integer, defaults: 0
+      add :runs, :integer, defaults: 0
+      add :rbis, :integer, defaults: 0
+      add :base_on_balls, :integer, defaults: 0
+      add :intentional_base_on_balls, :integer, defaults: 0
+      add :strikeouts, :integer, defaults: 0
+      add :stolen_bases, :integer, defaults: 0
+      add :caught_stealing, :integer, defaults: 0
+      add :sacrifice_hits, :integer, defaults: 0
+      add :sacrifice_flies, :integer, defaults: 0
+      add :gidp, :integer, defaults: 0
+      add :hbp, :integer, defaults: 0
       add :game_player_id, references(:game_players, on_delete: :nothing)
 
       timestamps()

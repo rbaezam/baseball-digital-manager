@@ -3,10 +3,10 @@ defmodule BaseballDigitalManager.Games.GameFieldingStats do
   import Ecto.Changeset
 
   schema "game_fielding_stats" do
-    field :assists, :integer
-    field :errors, :integer
-    field :passballs, :integer
-    field :putouts, :integer
+    field :assists, :integer, default: 0
+    field :errors, :integer, default: 0
+    field :passballs, :integer, default: 0
+    field :putouts, :integer, default: 0
     field :game_player_id, :id
 
     timestamps()
@@ -15,7 +15,7 @@ defmodule BaseballDigitalManager.Games.GameFieldingStats do
   @doc false
   def changeset(fielding_stats, attrs) do
     fielding_stats
-    |> cast(attrs, [:putouts, :assists, :errors, :passballs])
+    |> cast(attrs, [:putouts, :assists, :errors, :passballs, :game_player_id])
     |> validate_required([:putouts, :assists, :errors, :passballs])
   end
 end

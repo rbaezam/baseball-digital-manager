@@ -3,10 +3,10 @@ defmodule BaseballDigitalManager.Repo.Migrations.CreateGameFieldingStats do
 
   def change do
     create table(:game_fielding_stats) do
-      add :putouts, :integer, defaults: 0, null: false
-      add :assists, :integer, defaults: 0, null: false
-      add :errors, :integer, defaults: 0, null: false
-      add :passballs, :integer, defaults: 0, null: false
+      add :putouts, :integer, defaults: 0
+      add :assists, :integer, defaults: 0
+      add :errors, :integer, defaults: 0
+      add :passballs, :integer, defaults: 0
       add :game_player_id, references(:game_players, on_delete: :nothing)
 
       timestamps()

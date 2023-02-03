@@ -6,55 +6,1330 @@
     </div>
   </div>
 
-  <div class="card w-100 bg-base-100 shadow-xl">
-    <div class="card-body">
-      <h2 class="card-title"><%= @game.visitor_team.name %></h2>
-
-      <div class="overflow-x-auto"></div>
-      <table class="table table-compact w-full">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Pos</th>
-            <th>AB</th>
-            <th>H</th>
-            <th>2B</th>
-            <th>3B</th>
-            <th>HR</th>
-            <th>R</th>
-            <th>RBI</th>
-            <th>BB</th>
-            <th>IBB</th>
-            <th>SO</th>
-            <th>SB</th>
-            <th>CS</th>
-            <th>SH</th>
-            <th>SF</th>
-            <th>GIDP</th>
-            <th>HBP</th>
-            <th>A</th>
-            <th>PO</th>
-            <th>E</th>
-            <th>PB</th>
-          </tr>
-        </thead>
-        <tbody>
-          <%= for gp <- @visitor_players do %>
-            <tr>
-              <td><.display_full_name player={gp.player} /></td>
-              <td><%= gp.position %></td>
-              <td>
-                <.input
-                  type="number"
-                  id={"games-visitor-player-#{gp.id}"}
-                  name={"games-visitor-player-#{gp.id}"}
-                  value={gp.batting_stats.at_bats}
-                />
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+  <.simple_form :let={f} for={:game_form} phx-change="validate-form" phx-submit="save-game">
+    <div class="card w-100 bg-base-100 shadow-xl mb-4">
+      <div class="card-body">
+        <button class="btn btn-primary w-24">Submit Game</button>
+      </div>
     </div>
-  </div>
+
+    <div class="card w-100 bg-base-100 shadow-xl mb-4">
+      <div class="card-body">
+        <h2 class="card-title">
+          <%= @game.visitor_team.name %> <%= @game.visitor_team.nick_name %>
+          <.input
+            type="number"
+            id="games-team-visitor-runs"
+            name="games-team-visitor-runs"
+            value={@game.visitor_runs}
+            errors={[]}
+            class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+            style="padding-left: 4px; padding-right: 4px;"
+            phx-change="change-visitor-team-runs"
+            phx-value-id={@game.visitor_team.id}
+          />
+        </h2>
+
+        <div class="overflow-x-auto"></div>
+        <table class="table table-compact table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Batters</th>
+              <th class="text-center">Pos</th>
+              <th class="text-center">AB</th>
+              <th class="text-center">H</th>
+              <th class="text-center">2B</th>
+              <th class="text-center">3B</th>
+              <th class="text-center">HR</th>
+              <th class="text-center">R</th>
+              <th class="text-center">RBI</th>
+              <th class="text-center">BB</th>
+              <th class="text-center">IBB</th>
+              <th class="text-center">SO</th>
+              <th class="text-center">SB</th>
+              <th class="text-center">CS</th>
+              <th class="text-center">SH</th>
+              <th class="text-center">SF</th>
+              <th class="text-center">GIDP</th>
+              <th class="text-center">HBP</th>
+              <th class="text-center">A</th>
+              <th class="text-center">PO</th>
+              <th class="text-center">E</th>
+              <th class="text-center">PB</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= for gp <- @visitor_players do %>
+              <tr>
+                <td><.display_full_name player={gp.player} /></td>
+                <td class="text-center">
+                  <.input
+                    id={"games-visitor-player-pos-#{gp.id}"}
+                    name={"games-visitor-player-pos-#{gp.id}"}
+                    options={@positions}
+                    value={gp.position}
+                    type="select"
+                    errors={[]}
+                    class="select select-primary w-full max-w-xs"
+                    phx-blur="change-visitor-batter-position"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-ab-#{gp.id}"}
+                    name={"games-visitor-player-ab-#{gp.id}"}
+                    value={gp.batting_stats.at_bats}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="at_bats"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-h-#{gp.id}"}
+                    name={"games-visitor-player-h-#{gp.id}"}
+                    value={gp.batting_stats.hits}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="hits"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-2b-#{gp.id}"}
+                    name={"games-visitor-player-2b-#{gp.id}"}
+                    value={gp.batting_stats.doubles}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="doubles"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-3b-#{gp.id}"}
+                    name={"games-visitor-player-3b-#{gp.id}"}
+                    value={gp.batting_stats.triples}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="triples"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-hr-#{gp.id}"}
+                    name={"games-visitor-player-hr-#{gp.id}"}
+                    value={gp.batting_stats.homeruns}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="homeruns"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-r-#{gp.id}"}
+                    name={"games-visitor-player-r-#{gp.id}"}
+                    value={gp.batting_stats.runs}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="runs"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-rbi-#{gp.id}"}
+                    name={"games-visitor-player-rbi-#{gp.id}"}
+                    value={gp.batting_stats.rbis}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="rbis"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-bb-#{gp.id}"}
+                    name={"games-visitor-player-bb-#{gp.id}"}
+                    value={gp.batting_stats.base_on_balls}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="base_on_balls"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-ibb-#{gp.id}"}
+                    name={"games-visitor-player-ibb-#{gp.id}"}
+                    value={gp.batting_stats.intentional_base_on_balls}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="intentional_base_on_balls"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-so-#{gp.id}"}
+                    name={"games-visitor-player-so-#{gp.id}"}
+                    value={gp.batting_stats.strikeouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="strikeouts"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-sb-#{gp.id}"}
+                    name={"games-visitor-player-sb-#{gp.id}"}
+                    value={gp.batting_stats.stolen_bases}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="stolen_bases"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-cs-#{gp.id}"}
+                    name={"games-visitor-player-cs-#{gp.id}"}
+                    value={gp.batting_stats.caught_stealing}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="caught_stealing"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-sh-#{gp.id}"}
+                    name={"games-visitor-player-sh-#{gp.id}"}
+                    value={gp.batting_stats.sacrifice_hits}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="sacrifice_hits"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-sf-#{gp.id}"}
+                    name={"games-visitor-player-sf-#{gp.id}"}
+                    value={gp.batting_stats.sacrifice_flies}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="sacrifice_flies"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-gidp-#{gp.id}"}
+                    name={"games-visitor-player-gidp-#{gp.id}"}
+                    value={gp.batting_stats.gidp}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="gidp"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-hbp-#{gp.id}"}
+                    name={"games-visitor-player-hbp-#{gp.id}"}
+                    value={gp.batting_stats.hbp}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="hbp"
+                  />
+                </td>
+
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-outs-#{gp.id}"}
+                    name={"games-visitor-player-outs-#{gp.id}"}
+                    value={gp.fielding_stats.putouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="putouts"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-assists-#{gp.id}"}
+                    name={"games-visitor-player-assists-#{gp.id}"}
+                    value={gp.fielding_stats.assists}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="assists"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-errors-#{gp.id}"}
+                    name={"games-visitor-player-errors-#{gp.id}"}
+                    value={gp.fielding_stats.errors}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="errors"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-pb-#{gp.id}"}
+                    name={"games-visitor-player-pb-#{gp.id}"}
+                    value={gp.fielding_stats.passballs}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="passballs"
+                  />
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+        <table class="table table-compact table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Pitchers</th>
+              <th class="text-center">Outs</th>
+              <th class="text-center">BF</th>
+              <th class="text-center">H</th>
+              <th class="text-center">R</th>
+              <th class="text-center">ER</th>
+              <th class="text-center">HR</th>
+              <th class="text-center">BB</th>
+              <th class="text-center">SO</th>
+              <th class="text-center">WP</th>
+              <th class="text-center">HBP</th>
+              <th class="text-center">IBB</th>
+              <th class="text-center">Balks</th>
+
+              <th class="text-center">GS?</th>
+              <th class="text-center">CG?</th>
+              <th class="text-center">Won?</th>
+              <th class="text-center">Lost?</th>
+              <th class="text-center">Save?</th>
+
+              <th class="text-center">A</th>
+              <th class="text-center">PO</th>
+              <th class="text-center">E</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= for gp <- @visitor_pitchers do %>
+              <tr>
+                <td><.display_full_name player={gp.player} /></td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-outs-#{gp.id}"}
+                    name={"games-visitor-pitcher-outs-#{gp.id}"}
+                    value={gp.pitching_stats.outs_pitched}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="outs_pitched"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-bf-#{gp.id}"}
+                    name={"games-visitor-pitcher-bf-#{gp.id}"}
+                    value={gp.pitching_stats.batters_faced}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="batters_faced"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-h-#{gp.id}"}
+                    name={"games-visitor-pitcher-h-#{gp.id}"}
+                    value={gp.pitching_stats.hits}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="hits"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-r-#{gp.id}"}
+                    name={"games-visitor-pitcher-r-#{gp.id}"}
+                    value={gp.pitching_stats.runs}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="runs"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-er-#{gp.id}"}
+                    name={"games-visitor-pitcher-er-#{gp.id}"}
+                    value={gp.pitching_stats.earned_runs}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="earned_runs"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-er-#{gp.id}"}
+                    name={"games-visitor-pitcher-er-#{gp.id}"}
+                    value={gp.pitching_stats.homeruns_allowed}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="homeruns_allowed"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-bb-#{gp.id}"}
+                    name={"games-visitor-pitcher-b-#{gp.id}"}
+                    value={gp.pitching_stats.base_on_balls}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="base_on_balls"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-so-#{gp.id}"}
+                    name={"games-visitor-pitcher-so-#{gp.id}"}
+                    value={gp.pitching_stats.strikeouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="strikeouts"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-wp-#{gp.id}"}
+                    name={"games-visitor-pitcher-wp-#{gp.id}"}
+                    value={gp.pitching_stats.wild_pitches}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="wild_pitches"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-balks-#{gp.id}"}
+                    name={"games-visitor-pitcher-balks-#{gp.id}"}
+                    value={gp.pitching_stats.hits_by_pitch}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="hits_by_pitch"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-balks-#{gp.id}"}
+                    name={"games-visitor-pitcher-balks-#{gp.id}"}
+                    value={gp.pitching_stats.intentional_base_on_balls}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="intentional_base_on_balls"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-pitcher-balks-#{gp.id}"}
+                    name={"games-visitor-pitcher-balks-#{gp.id}"}
+                    value={gp.pitching_stats.balks}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="balks"
+                  />
+                </td>
+
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-visitor-pitcher-gs-#{gp.id}"}
+                    name={"games-visitor-pitcher-gs-#{gp.id}"}
+                    value={gp.pitching_stats.started_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-visitor-pitcher-value"
+                    phx-value-stat="started_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-visitor-pitcher-cg-#{gp.id}"}
+                    name={"games-visitor-pitcher-cg-#{gp.id}"}
+                    value={gp.pitching_stats.closed_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-visitor-pitcher-value"
+                    phx-value-stat="closed_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-visitor-pitcher-won-#{gp.id}"}
+                    name={"games-visitor-pitcher-won-#{gp.id}"}
+                    value={gp.pitching_stats.won_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-visitor-pitcher-value"
+                    phx-value-stat="won_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-visitor-pitcher-lost-#{gp.id}"}
+                    name={"games-visitor-pitcher-lost-#{gp.id}"}
+                    value={gp.pitching_stats.lost_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-visitor-pitcher-value"
+                    phx-value-stat="lost_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-visitor-pitcher-save-#{gp.id}"}
+                    name={"games-visitor-pitcher-save-#{gp.id}"}
+                    value={gp.pitching_stats.saved_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-player"
+                    phx-value-stat="saved_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-outs-#{gp.id}"}
+                    name={"games-visitor-player-outs-#{gp.id}"}
+                    value={gp.fielding_stats.putouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="putouts"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-assists-#{gp.id}"}
+                    name={"games-visitor-player-assists-#{gp.id}"}
+                    value={gp.fielding_stats.assists}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="assists"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-errors-#{gp.id}"}
+                    name={"games-visitor-player-errors-#{gp.id}"}
+                    value={gp.fielding_stats.errors}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="errors"
+                  />
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card w-100 bg-base-100 shadow-xl mb-8">
+      <div class="card-body">
+        <h2 class="card-title">
+          <%= @game.local_team.name %> <%= @game.local_team.nick_name %>
+          <.input
+            type="number"
+            id="games-team-local-runs"
+            name="games-team-local-runs"
+            value={@game.local_runs}
+            errors={[]}
+            class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+            style="padding-left: 4px; padding-right: 4px;"
+            phx-change="change-local-team-runs"
+            phx-value-id={@game.local_team.id}
+          />
+        </h2>
+
+        <div class="overflow-x-auto"></div>
+        <table class="table table-compact table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Batters</th>
+              <th class="text-center">Pos</th>
+              <th class="text-center">AB</th>
+              <th class="text-center">H</th>
+              <th class="text-center">2B</th>
+              <th class="text-center">3B</th>
+              <th class="text-center">HR</th>
+              <th class="text-center">R</th>
+              <th class="text-center">RBI</th>
+              <th class="text-center">BB</th>
+              <th class="text-center">IBB</th>
+              <th class="text-center">SO</th>
+              <th class="text-center">SB</th>
+              <th class="text-center">CS</th>
+              <th class="text-center">SH</th>
+              <th class="text-center">SF</th>
+              <th class="text-center">GIDP</th>
+              <th class="text-center">HBP</th>
+              <th class="text-center">A</th>
+              <th class="text-center">PO</th>
+              <th class="text-center">E</th>
+              <th class="text-center">PB</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= for gp <- @local_players do %>
+              <tr>
+                <td><.display_full_name player={gp.player} /></td>
+                <td class="text-center">
+                  <.input
+                    id={"games-local-player-pos-#{gp.id}"}
+                    name={"games-local-player-pos-#{gp.id}"}
+                    options={@positions}
+                    value={gp.position}
+                    type="select"
+                    errors={[]}
+                    class="select select-primary w-full max-w-xs"
+                    phx-blur="change-local-batter-position"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-ab-#{gp.id}"}
+                    name={"games-local-player-ab-#{gp.id}"}
+                    value={gp.batting_stats.hits}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="at_bats"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-h-#{gp.id}"}
+                    name={"games-local-player-h-#{gp.id}"}
+                    value={gp.batting_stats.hits}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="hits"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-2b-#{gp.id}"}
+                    name={"games-local-player-2b-#{gp.id}"}
+                    value={gp.batting_stats.doubles}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="doubles"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-3b-#{gp.id}"}
+                    name={"games-local-player-3b-#{gp.id}"}
+                    value={gp.batting_stats.triples}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="triples"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-hr-#{gp.id}"}
+                    name={"games-local-player-hr-#{gp.id}"}
+                    value={gp.batting_stats.homeruns}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="homeruns"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-r-#{gp.id}"}
+                    name={"games-local-player-r-#{gp.id}"}
+                    value={gp.batting_stats.runs}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="runs"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-rbi-#{gp.id}"}
+                    name={"games-local-player-rbi-#{gp.id}"}
+                    value={gp.batting_stats.rbis}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="rbis"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-bb-#{gp.id}"}
+                    name={"games-local-player-bb-#{gp.id}"}
+                    value={gp.batting_stats.base_on_balls}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="base_on_balls"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-ibb-#{gp.id}"}
+                    name={"games-local-player-ibb-#{gp.id}"}
+                    value={gp.batting_stats.intentional_base_on_balls}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="intentional_base_on_balls"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-so-#{gp.id}"}
+                    name={"games-local-player-so-#{gp.id}"}
+                    value={gp.batting_stats.strikeouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="strikeouts"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-sb-#{gp.id}"}
+                    name={"games-local-player-sb-#{gp.id}"}
+                    value={gp.batting_stats.stolen_bases}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="stolen_bases"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-cs-#{gp.id}"}
+                    name={"games-local-player-cs-#{gp.id}"}
+                    value={gp.batting_stats.caught_stealing}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="caught_stealing"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-sh-#{gp.id}"}
+                    name={"games-local-player-sh-#{gp.id}"}
+                    value={gp.batting_stats.sacrifice_hits}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="sacrifice_hits"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-sf-#{gp.id}"}
+                    name={"games-local-player-sf-#{gp.id}"}
+                    value={gp.batting_stats.sacrifice_flies}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="sacrifice_flies"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-gidp-#{gp.id}"}
+                    name={"games-local-player-gidp-#{gp.id}"}
+                    value={gp.batting_stats.gidp}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="gidp"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-hbp-#{gp.id}"}
+                    name={"games-local-player-hbp-#{gp.id}"}
+                    value={gp.batting_stats.hbp}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-batter-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="hbp"
+                  />
+                </td>
+
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-outs-#{gp.id}"}
+                    name={"games-local-player-outs-#{gp.id}"}
+                    value={gp.fielding_stats.putouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="putouts"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-assists-#{gp.id}"}
+                    name={"games-local-player-assists-#{gp.id}"}
+                    value={gp.fielding_stats.assists}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="assists"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-errors-#{gp.id}"}
+                    name={"games-local-player-errors-#{gp.id}"}
+                    value={gp.fielding_stats.errors}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="errors"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-pb-#{gp.id}"}
+                    name={"games-local-player-pb-#{gp.id}"}
+                    value={gp.fielding_stats.passballs}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="passballs"
+                  />
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+        <table class="table table-compact table-zebra w-full">
+          <thead>
+            <tr>
+              <th>Pitchers</th>
+              <th class="text-center">Outs</th>
+              <th class="text-center">BF</th>
+              <th class="text-center">H</th>
+              <th class="text-center">R</th>
+              <th class="text-center">ER</th>
+              <th class="text-center">HR</th>
+              <th class="text-center">BB</th>
+              <th class="text-center">SO</th>
+              <th class="text-center">WP</th>
+              <th class="text-center">HBP</th>
+              <th class="text-center">IBB</th>
+              <th class="text-center">Balks</th>
+
+              <th class="text-center">GS?</th>
+              <th class="text-center">CG?</th>
+              <th class="text-center">Won?</th>
+              <th class="text-center">Lost?</th>
+              <th class="text-center">Save?</th>
+
+              <th class="text-center">A</th>
+              <th class="text-center">PO</th>
+              <th class="text-center">E</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= for gp <- @local_pitchers do %>
+              <tr>
+                <td><.display_full_name player={gp.player} /></td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-outs-#{gp.id}"}
+                    name={"games-local-pitcher-outs-#{gp.id}"}
+                    value={gp.pitching_stats.outs_pitched}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="outs_pitched"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-bf-#{gp.id}"}
+                    name={"games-local-pitcher-bf-#{gp.id}"}
+                    value={gp.pitching_stats.batters_faced}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="batters_faced"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-h-#{gp.id}"}
+                    name={"games-local-pitcher-h-#{gp.id}"}
+                    value={gp.pitching_stats.hits}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="hits"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-r-#{gp.id}"}
+                    name={"games-local-pitcher-r-#{gp.id}"}
+                    value={gp.pitching_stats.runs}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="runs"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-er-#{gp.id}"}
+                    name={"games-local-pitcher-er-#{gp.id}"}
+                    value={gp.pitching_stats.earned_runs}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="earned_runs"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-er-#{gp.id}"}
+                    name={"games-local-pitcher-er-#{gp.id}"}
+                    value={gp.pitching_stats.homeruns_allowed}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="homeruns_allowed"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-bb-#{gp.id}"}
+                    name={"games-local-pitcher-b-#{gp.id}"}
+                    value={gp.pitching_stats.base_on_balls}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="base_on_balls"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-so-#{gp.id}"}
+                    name={"games-local-pitcher-so-#{gp.id}"}
+                    value={gp.pitching_stats.strikeouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="strikeouts"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-wp-#{gp.id}"}
+                    name={"games-local-pitcher-wp-#{gp.id}"}
+                    value={gp.pitching_stats.wild_pitches}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="wild_pitches"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-balks-#{gp.id}"}
+                    name={"games-local-pitcher-balks-#{gp.id}"}
+                    value={gp.pitching_stats.hits_by_pitch}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="hits_by_pitch"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-balks-#{gp.id}"}
+                    name={"games-local-pitcher-balks-#{gp.id}"}
+                    value={gp.pitching_stats.intentional_base_on_balls}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="intentional_base_on_balls"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-pitcher-balks-#{gp.id}"}
+                    name={"games-local-pitcher-balks-#{gp.id}"}
+                    value={gp.pitching_stats.balks}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-pitching-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="balks"
+                  />
+                </td>
+
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-local-pitcher-gs-#{gp.id}"}
+                    name={"games-local-pitcher-gs-#{gp.id}"}
+                    value={gp.pitching_stats.started_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-local-pitcher-value"
+                    phx-value-stat="started_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-local-pitcher-cg-#{gp.id}"}
+                    name={"games-local-pitcher-cg-#{gp.id}"}
+                    value={gp.pitching_stats.closed_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-local-pitcher-value"
+                    phx-value-stat="closed_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-local-pitcher-won-#{gp.id}"}
+                    name={"games-local-pitcher-won-#{gp.id}"}
+                    value={gp.pitching_stats.won_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-local-pitcher-value"
+                    phx-value-stat="won_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-local-pitcher-lost-#{gp.id}"}
+                    name={"games-local-pitcher-lost-#{gp.id}"}
+                    value={gp.pitching_stats.lost_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-local-pitcher-value"
+                    phx-value-stat="lost_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="checkbox"
+                    id={"games-local-pitcher-save-#{gp.id}"}
+                    name={"games-local-pitcher-save-#{gp.id}"}
+                    value={gp.pitching_stats.saved_game}
+                    class="p-1 checkbox checkbox-primary"
+                    phx-click="toggle-player"
+                    phx-value-stat="saved_game"
+                    phx-value-id={gp.id}
+                  />
+                </td>
+
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-outs-#{gp.id}"}
+                    name={"games-local-player-outs-#{gp.id}"}
+                    value={gp.fielding_stats.putouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="putouts"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-assists-#{gp.id}"}
+                    name={"games-local-player-assists-#{gp.id}"}
+                    value={gp.fielding_stats.assists}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="assists"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-errors-#{gp.id}"}
+                    name={"games-local-player-errors-#{gp.id}"}
+                    value={gp.fielding_stats.errors}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="errors"
+                  />
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </.simple_form>
+  <div class="mt-4">&nbsp;</div>
 </div>

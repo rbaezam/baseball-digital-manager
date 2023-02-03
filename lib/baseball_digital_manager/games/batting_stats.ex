@@ -3,21 +3,22 @@ defmodule BaseballDigitalManager.Games.GameBattingStats do
   import Ecto.Changeset
 
   schema "game_batting_stats" do
-    field :at_bats, :integer
-    field :base_on_balls, :integer
-    field :caught_stealing, :integer
-    field :doubles, :integer
-    field :gidp, :integer
-    field :hbp, :integer
-    field :hits, :integer
-    field :homeruns, :integer
-    field :rbis, :integer
-    field :runs, :integer
-    field :sacrifice_flies, :integer
-    field :sacrifice_hits, :integer
-    field :stolen_bases, :integer
-    field :strikeouts, :integer
-    field :triples, :integer
+    field :at_bats, :integer, default: 0
+    field :base_on_balls, :integer, default: 0
+    field :intentional_base_on_balls, :integer, default: 0
+    field :caught_stealing, :integer, default: 0
+    field :doubles, :integer, default: 0
+    field :gidp, :integer, default: 0
+    field :hbp, :integer, default: 0
+    field :hits, :integer, default: 0
+    field :homeruns, :integer, default: 0
+    field :rbis, :integer, default: 0
+    field :runs, :integer, default: 0
+    field :sacrifice_flies, :integer, default: 0
+    field :sacrifice_hits, :integer, default: 0
+    field :stolen_bases, :integer, default: 0
+    field :strikeouts, :integer, default: 0
+    field :triples, :integer, default: 0
     field :game_player_id, :id
 
     timestamps()
@@ -41,7 +42,8 @@ defmodule BaseballDigitalManager.Games.GameBattingStats do
       :sacrifice_hits,
       :sacrifice_flies,
       :gidp,
-      :hbp
+      :hbp,
+      :game_player_id
     ])
     |> validate_required([
       :at_bats,

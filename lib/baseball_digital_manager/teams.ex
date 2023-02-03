@@ -18,6 +18,15 @@ defmodule BaseballDigitalManager.Teams do
       join: library in assoc(league, :library),
       where: library.id == ^library_id
     )
+    |> order_by(asc: :nick_name)
     |> Repo.all()
+  end
+
+  def get_team_by_nick_name(nick_name) do
+    from(t in Team,
+      where: t.nick_name == ^nick_name
+    )
+    |> Repo.all()
+    |> List.first()
   end
 end

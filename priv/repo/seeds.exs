@@ -10,6 +10,8 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+alias BaseballDigitalManager.Teams
+
 alias BaseballDigitalManager.{
   Divisions.Division,
   Leagues.League,
@@ -19,126 +21,222 @@ alias BaseballDigitalManager.{
   Teams.Team
 }
 
-library =
-  BaseballDigitalManager.Repo.insert!(%Library{
-    id: 1,
-    name: "Negro League Library",
-    starting_year: 1930
-  })
+# library =
+#   BaseballDigitalManager.Repo.insert!(%Library{
+#     id: 1,
+#     name: "On-Deck Baseball League Library",
+#     starting_year: 2023
+#   })
 
-season =
-  BaseballDigitalManager.Repo.insert!(%Season{
-    id: 1,
-    library_id: library.id,
-    name: "Negro League Season 1930",
-    year: 1930
-  })
+# season =
+#   BaseballDigitalManager.Repo.insert!(%Season{
+#     id: 1,
+#     library_id: library.id,
+#     name: "Season 2023",
+#     year: 2023
+#   })
 
-league =
-  BaseballDigitalManager.Repo.insert!(%League{
-    name: "Negro League All Stars",
-    short_name: "NLAS",
-    library_id: library.id
-  })
+# league =
+#   BaseballDigitalManager.Repo.insert!(%League{
+#     name: "OnDeck Baseball League",
+#     short_name: "ODBL",
+#     library_id: library.id
+#   })
 
-division1 =
-  BaseballDigitalManager.Repo.insert!(%Division{
-    name: "Red Division",
-    short_name: "RD",
-    league_id: league.id
-  })
+# division1 =
+#   BaseballDigitalManager.Repo.insert!(%Division{
+#     name: "Atlantic Division",
+#     short_name: "AD",
+#     league_id: league.id
+#   })
 
-division2 =
-  BaseballDigitalManager.Repo.insert!(%Division{
-    name: "Blue Division",
-    short_name: "BD",
-    league_id: league.id
-  })
+# division2 =
+#   BaseballDigitalManager.Repo.insert!(%Division{
+#     name: "Pacific Division",
+#     short_name: "PD",
+#     league_id: league.id
+#   })
 
-team_atl =
-  BaseballDigitalManager.Repo.insert!(%Team{
-    name: "Atlanta",
-    nick_name: "Black Crackers",
-    short_name: "ATL",
-    league_id: league.id,
-    division_id: division2.id,
-    current_season_wins: 0,
-    current_season_losses: 0
-  })
+# team_bos =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "Boston",
+#     nick_name: "Gators",
+#     short_name: "BOS",
+#     league_id: league.id,
+#     division_id: division1.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
 
-team_bal =
-  BaseballDigitalManager.Repo.insert!(%Team{
-    name: "Baltimore",
-    nick_name: "Eagles",
-    short_name: "BAL",
-    league_id: league.id,
-    division_id: division1.id,
-    current_season_wins: 0,
-    current_season_losses: 0
-  })
+# team_buf =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "Buiffalo",
+#     nick_name: "Comets",
+#     short_name: "BUF",
+#     league_id: league.id,
+#     division_id: division1.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
 
-team_chi =
-  BaseballDigitalManager.Repo.insert!(%Team{
-    name: "Chicago",
-    nick_name: "American Giants",
-    short_name: "CHI",
-    league_id: league.id,
-    division_id: division2.id,
-    current_season_wins: 0,
-    current_season_losses: 0
-  })
+# team_tor =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "Toronto",
+#     nick_name: "Phantoms",
+#     short_name: "TOR",
+#     league_id: league.id,
+#     division_id: division1.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
 
-team_det =
-  BaseballDigitalManager.Repo.insert!(%Team{
-    name: "Detroit",
-    nick_name: "Stars",
-    short_name: "DET",
-    league_id: league.id,
-    division_id: division1.id,
-    current_season_wins: 0,
-    current_season_losses: 0
-  })
+# team_ota =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "Ottaw",
+#     nick_name: "Wolves",
+#     short_name: "OTA",
+#     league_id: league.id,
+#     division_id: division1.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
 
-team_mem =
-  BaseballDigitalManager.Repo.insert!(%Team{
-    name: "Memphis",
-    nick_name: "Red Sox",
-    short_name: "MEM",
-    league_id: league.id,
-    division_id: division2.id,
-    current_season_wins: 0,
-    current_season_losses: 0
-  })
+# team_mon =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "Montreal",
+#     nick_name: "Drillers",
+#     short_name: "MON",
+#     league_id: league.id,
+#     division_id: division1.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
 
-team_phi =
-  BaseballDigitalManager.Repo.insert!(%Team{
-    name: "Philladelphia",
-    nick_name: "Royals",
-    short_name: "PHI",
-    league_id: league.id,
-    division_id: division1.id,
-    current_season_wins: 0,
-    current_season_losses: 0
-  })
+# team_cal =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "Calgary",
+#     nick_name: "Makos",
+#     short_name: "CAL",
+#     league_id: league.id,
+#     division_id: division2.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
 
-"/Users/rodolfo/Code/Personal/BaseballDigitalManager/baseball_digital_manager/priv/repo/players.csv"
+# team_edm =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "Edmonton",
+#     nick_name: "Bulls",
+#     short_name: "EDM",
+#     league_id: league.id,
+#     division_id: division2.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
+
+# team_van =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "Vancouver",
+#     nick_name: "Vipers",
+#     short_name: "VAN",
+#     league_id: league.id,
+#     division_id: division2.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
+
+# team_sj =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "San Jose",
+#     nick_name: "Knights",
+#     short_name: "SJ",
+#     league_id: league.id,
+#     division_id: division2.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
+
+# team_cal =
+#   BaseballDigitalManager.Repo.insert!(%Team{
+#     name: "Vegas",
+#     nick_name: "Hornets",
+#     short_name: "VEG",
+#     league_id: league.id,
+#     division_id: division2.id,
+#     current_season_wins: 0,
+#     current_season_losses: 0
+#   })
+
+"/Users/rodolfo/Code/Personal/BaseballDigitalManager/baseball_digital_manager/priv/repo/OnDeckBaseballRosters2.csv"
 |> File.stream!()
 |> CSV.decode(headers: true)
 |> Enum.map(fn data -> data end)
 |> Enum.map(fn {:ok, row} ->
   IO.inspect(row, label: "// row //")
 
+  team = Teams.get_team_by_nick_name(row["\uFEFFTeam"])
+
+  bats =
+    case row["Bats"] do
+      "R" -> :right
+      "L" -> :left
+      "S" -> :switch
+    end
+
+  throws =
+    case row["Throws"] do
+      "R" -> :right
+      "L" -> :left
+    end
+
+  secondary_position =
+    case row["Position2"] do
+      "nil" -> nil
+      "" -> nil
+      pos -> String.to_atom(pos)
+    end
+
+  lineup_position =
+    case row["LineupPos"] do
+      "" -> nil
+      pos -> String.to_integer(pos)
+    end
+
   BaseballDigitalManager.Repo.insert!(%Player{
-    last_name: row["last_name"],
-    first_name: row["first_name"],
-    bats: String.to_atom(row["bats"]),
-    throws: String.to_atom(row["throws"]),
-    team_id: String.to_integer(row["team_id"]),
-    main_position: String.to_atom(row["main_position"]),
+    last_name: row["LastName"],
+    first_name: row["FirstName"],
+    bats: bats,
+    throws: throws,
+    team_id: team.id,
+    main_position: String.to_atom(row["Position"]),
+    secondary_position: secondary_position,
+    lineup_position: lineup_position,
     pitcher_type:
-      case row["pitcher_type"] do
+      case row["PitcherType"] do
         "" -> nil
         pitcher_type -> String.to_atom(pitcher_type)
       end
   })
 end)
+
+# "/Users/rodolfo/Code/Personal/BaseballDigitalManager/baseball_digital_manager/priv/repo/players.csv"
+# |> File.stream!()
+# |> CSV.decode(headers: true)
+# |> Enum.map(fn data -> data end)
+# |> Enum.map(fn {:ok, row} ->
+#   IO.inspect(row, label: "// row //")
+
+#   BaseballDigitalManager.Repo.insert!(%Player{
+#     last_name: row["last_name"],
+#     first_name: row["first_name"],
+#     bats: String.to_atom(row["bats"]),
+#     throws: String.to_atom(row["throws"]),
+#     team_id: String.to_integer(row["team_id"]),
+#     main_position: String.to_atom(row["main_position"]),
+#     pitcher_type:
+#       case row["pitcher_type"] do
+#         "" -> nil
+#         pitcher_type -> String.to_atom(pitcher_type)
+#       end
+#   })
+# end)
