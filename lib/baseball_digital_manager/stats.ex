@@ -5,7 +5,53 @@ defmodule BaseballDigitalManager.Stats do
 
   import Ecto.Query, warn: false
   alias BaseballDigitalManager.Repo
+  alias BaseballDigitalManager.Players.Player
   alias BaseballDigitalManager.Stats.{BattingStats, FieldingStats, PitchingStats}
+
+  def homerun_leaders(count \\ 5) do
+    from(bs in BattingStats,
+      preload: [player: [:team]],
+      order_by: [desc: :homeruns],
+      limit: ^count
+    )
+    |> Repo.all()
+    |> Enum.map(fn item ->
+      %{
+        id: item.player.id,
+        team_id: item.player.team.id,
+        team_name: item.player.team.nick_name,
+        first_name: item.player.first_name,
+        last_name: item.player.last_name,
+        full_name: "#{item.player.first_name} #{item.player.last_name}",
+        bats: item.player.bats,
+        lineup_position: item.player.lineup_position,
+        main_position: item.player.main_position,
+        batting_stats: item
+      }
+    end)
+  end
+
+  def strikeout_leaders(count \\ 5) do
+    from(ps in PitchingStats,
+      preload: [player: [:team]],
+      order_by: [desc: :strikeouts],
+      limit: ^count
+    )
+    |> Repo.all()
+    |> Enum.map(fn item ->
+      %{
+        id: item.player.id,
+        team_id: item.player.team.id,
+        team_name: item.player.team.nick_name,
+        first_name: item.player.first_name,
+        last_name: item.player.last_name,
+        full_name: "#{item.player.first_name} #{item.player.last_name}",
+        throws: item.player.throws,
+        main_position: item.player.main_position,
+        pitching_stats: item
+      }
+    end)
+  end
 
   def get_batting_stats_for_player(player_id, team_id, season_id) do
     case from(bs in BattingStats,

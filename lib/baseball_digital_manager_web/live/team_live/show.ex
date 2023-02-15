@@ -23,7 +23,17 @@ defmodule BaseballDigitalManagerWeb.TeamLive.Show do
       |> assign(:library_id, library_id)
       |> assign(:batters, batters)
       |> assign(:pitchers, pitchers)
+      |> assign(:selected_player, nil)
 
     {:ok, assigns}
+  end
+
+  @impl true
+  def handle_event("select-player", %{"id" => id}, socket) do
+    assigns =
+      socket
+      |> assign(:selected_player, String.to_integer(id))
+
+    {:noreply, assigns}
   end
 end

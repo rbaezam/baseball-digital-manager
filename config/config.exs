@@ -14,7 +14,10 @@ config :baseball_digital_manager,
 config :baseball_digital_manager, BaseballDigitalManagerWeb.Endpoint,
   url: [host: "localhost"],
   render_errors: [
-    formats: [html: BaseballDigitalManagerWeb.ErrorHTML, json: BaseballDigitalManagerWeb.ErrorJSON],
+    formats: [
+      html: BaseballDigitalManagerWeb.ErrorHTML,
+      json: BaseballDigitalManagerWeb.ErrorJSON
+    ],
     layout: false
   ],
   pubsub_server: BaseballDigitalManager.PubSub,
@@ -58,6 +61,8 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :dart_sass, :version, "1.54.5"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

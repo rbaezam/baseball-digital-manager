@@ -20,9 +20,12 @@ defmodule BaseballDigitalManagerWeb.Router do
     get "/", PageController, :home
 
     live "/library/:id", LibraryLive.Index, :index
+    live "/schedule/:library_id", ScheduleLive.Index, :index
     live "/team/:library_id/:id", TeamLive.Show, :show
     live "/game/:library_id/new", GameLive.New, :new
+    live "/game/:library_id/new/:game_id", GameLive.New, :new
     live "/game/:library_id/edit/:id", GameLive.Edit, :edit
+    live "/game/:library_id/play/:id", GameLive.Play, :play
   end
 
   # Other scopes may use custom stacks.

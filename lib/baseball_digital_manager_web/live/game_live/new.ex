@@ -5,6 +5,50 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
   alias BaseballDigitalManager.Games
 
   @impl true
+  def mount(
+        %{
+          "library_id" => library_id,
+          "game_id" => game_id
+        },
+        _params,
+        socket
+      ) do
+    teams =
+      Teams.get_teams_from_library(library_id)
+      |> Enum.map(&{&1.nick_name, &1.id})
+
+    lineup_positions = ["", 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    game = Games.get!(game_id)
+
+    visitor_players =
+      Players.get_players_from_team(game.visitor_team_id)
+      |> Enum.map(fn item -> item |> Map.put(:is_selected, false) end)
+
+    local_players =
+      Players.get_players_from_team(game.local_team_id)
+      |> Enum.map(fn item -> item |> Map.put(:is_selected, false) end)
+
+    game_form = %{
+      local_team: ""
+    }
+
+    assigns =
+      socket
+      |> assign(:library_id, library_id)
+      |> assign(:current_date, game.date)
+      |> assign(:teams, teams)
+      |> assign(:game_form, game_form)
+      |> assign(:selected_local_team, game.local_team_id)
+      |> assign(:selected_visitor_team, game.visitor_team_id)
+      |> assign(:visitor_players, visitor_players)
+      |> assign(:local_players, local_players)
+      |> assign(:lineup_positions, lineup_positions)
+      |> assign(:game_id, game_id)
+
+    {:ok, assigns}
+  end
+
   def mount(%{"library_id" => library_id}, _params, socket) do
     teams =
       Teams.get_teams_from_library(library_id)
@@ -47,7 +91,7 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
   end
 
   def handle_event("save-game", _params, socket) do
-    IO.inspect(socket.assigns.library_id, label: "//// save game assigns ///")
+    game = Games.get!(socket.assigns.game_id)
 
     selected_visitor_players =
       socket.assigns.visitor_players
@@ -84,7 +128,7 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
       library_id: socket.assigns.library_id
     }
 
-    {game, _players} = Games.create_game(attr)
+    game = Games.update_game(game, attr)
 
     {:noreply,
      socket
@@ -220,6 +264,7 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
       socket.assigns.visitor_players
       |> Enum.map(fn item ->
         if item.id == String.to_integer(player_id) do
+          {lineup_position, _} = Integer.parse(lineup_position)
           item |> Map.put(:lineup_position, String.to_integer(lineup_position))
         else
           item

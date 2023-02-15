@@ -23,6 +23,11 @@ defmodule BaseballDigitalManager.Games do
     ])
   end
 
+  def get_games(date) do
+    from(g in Game, where: g.date == ^date, preload: [:visitor_team, :local_team])
+    |> Repo.all()
+  end
+
   def create_game(attrs) do
     new_game =
       with {:ok, new_game} <-
@@ -61,10 +66,22 @@ defmodule BaseballDigitalManager.Games do
     |> Enum.map(fn gp ->
       if gp.batting_stats != nil do
         Players.update_batting_stats(gp.player, gp.batting_stats)
+      else
+        if gp.player.main_position != :pitcher do
+          gp
+          |> Map.put(:batting_stats, create_batting_stats(gp))
+          |> Map.put(:fielding_stats, create_fielding_stats(gp))
+        end
       end
 
       if gp.pitching_stats != nil do
         Players.update_pitching_stats(gp.player, gp.pitching_stats)
+      else
+        if gp.player.main_position == :pitcher do
+          gp
+          |> Map.put(:pitching_stats, create_pitching_stats(gp))
+          |> Map.put(:fielding_stats, create_fielding_stats(gp))
+        end
       end
 
       if gp.fielding_stats != nil do

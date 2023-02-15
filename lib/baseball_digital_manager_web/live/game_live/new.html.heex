@@ -34,6 +34,7 @@
                     <th>Position</th>
                     <th>Bats</th>
                     <th>Throws</th>
+                    <th>Last Game</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -76,6 +77,14 @@
                       <td class="p-1">
                         <%= Atom.to_string(player.throws) |> String.capitalize() %>
                       </td>
+                      <td>
+                        <%= if player.main_position == :pitcher && player.last_game_pitching != nil do %>
+                          <.display_pitching_IP_last_game
+                            pitching_stats={player.last_game_pitching}
+                            current_date={@current_date}
+                          />
+                        <% end %>
+                      </td>
                     </tr>
                   <% end %>
                 </tbody>
@@ -105,6 +114,7 @@
                     <th>Position</th>
                     <th>Bats</th>
                     <th>Throws</th>
+                    <th>Last Game</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -147,6 +157,14 @@
                       <td class="p-1">
                         <%= Atom.to_string(player.throws) |> String.capitalize() %>
                       </td>
+                      <td>
+                        <%= if player.main_position == :pitcher && player.last_game_pitching != nil do %>
+                          <.display_pitching_IP_last_game
+                            pitching_stats={player.last_game_pitching}
+                            current_date={@current_date}
+                          />
+                        <% end %>
+                      </td>
                     </tr>
                   <% end %>
                 </tbody>
@@ -157,7 +175,7 @@
       </div>
       <div class="py-2 text-center">
         <button class="btn btn-primary">Continue</button>
-        <button class="btn btn-secondary">Cancel</button>
+        <.link navigate={~p"/schedule/#{@library_id}"} class="btn btn-secondary">Cancel</.link>
       </div>
     </.simple_form>
   </div>

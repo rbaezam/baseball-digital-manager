@@ -1,0 +1,76 @@
+<div class="schedule-home p4">
+  <h1>Schedule of <%= @library.name %></h1>
+
+  <div class="grid grid-flow-col auto-cols-max">
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title">Today's games</h2>
+
+        <%= for game <- @todays_games do %>
+          <div class="grid grid-flow-row my-4 border-2 p-2">
+            <div class="grid grid-cols-4 gap-4">
+              <div>
+                <%= game.visitor_team.name %> <%= game.visitor_team.nick_name %>
+              </div>
+              <div>
+                <%= game.visitor_runs %>
+              </div>
+              <div>
+                <%= game.visitor_hits %>
+              </div>
+              <div>
+                <%= game.visitor_errors %>
+              </div>
+            </div>
+            <div class="grid grid-cols-4 gap-4">
+              <div>
+                <%= game.local_team.name %> <%= game.local_team.nick_name %>
+              </div>
+              <div>
+                <%= game.local_runs %>
+              </div>
+              <div>
+                <%= game.local_hits %>
+              </div>
+              <div>
+                <%= game.local_errors %>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 gap-4">
+              <div>W: Winner - L: Loser</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title">Coming games</h2>
+
+        <%= for game <- @coming_games do %>
+          <div class="grid grid-flow-row my-4 border-2 p-2">
+            <div class="grid grid-cols-2 gap-4 my-2">
+              <div class="grid grid-flow-row">
+                <div>
+                  <%= game.visitor_team.name %> <%= game.visitor_team.nick_name %>
+                </div>
+                <div>
+                  <%= game.local_team.name %> <%= game.local_team.nick_name %>
+                </div>
+              </div>
+              <div>
+                <.link navigate={~p"/game/#{@library.id}/new/#{game.id}"} class="btn btn-primary">
+                  Play Game
+                </.link>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 gap-4">
+              <div>W: Winner - L: Loser</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

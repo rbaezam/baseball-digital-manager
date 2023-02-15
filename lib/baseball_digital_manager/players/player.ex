@@ -50,9 +50,16 @@ defmodule BaseballDigitalManager.Players.Player do
     field :pitcher_type, Ecto.Enum, values: [:starter, :reliever, :setup, :closer]
     belongs_to :team, BaseballDigitalManager.Teams.Team
 
+    has_many :game_players, BaseballDigitalManager.Games.GamePlayer
     has_many :batting_stats, BaseballDigitalManager.Stats.BattingStats
     has_many :pitching_stats, BaseballDigitalManager.Stats.PitchingStats
     has_many :fielding_stats, BaseballDigitalManager.Stats.FieldingStats
+
+    has_many :game_batting_stats,
+      through: [:game_players, :batting_stats]
+
+    has_many :game_pitching_stats,
+      through: [:game_players, :pitching_stats]
 
     timestamps()
   end

@@ -19,7 +19,7 @@ defmodule BaseballDigitalManager.Games.GamePitchingStats do
     field :homeruns_allowed, :integer, default: 0
     field :won_game, :boolean, default: false
     field :hits_by_pitch, :integer, default: 0
-    field :game_player_id, :id
+    belongs_to :game_player, BaseballDigitalManager.Games.GamePlayer
     field :intentional_base_on_balls, :integer, default: 0
 
     timestamps()

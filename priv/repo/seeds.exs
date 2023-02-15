@@ -167,7 +167,7 @@ alias BaseballDigitalManager.{
 #     current_season_losses: 0
 #   })
 
-"/Users/rodolfo/Code/Personal/BaseballDigitalManager/baseball_digital_manager/priv/repo/OnDeckBaseballRosters2.csv"
+"/Users/rodolfo/Code/Personal/BaseballDigitalManager/baseball_digital_manager/priv/repo/OnDeckBaseballRosters3.csv"
 |> File.stream!()
 |> CSV.decode(headers: true)
 |> Enum.map(fn data -> data end)

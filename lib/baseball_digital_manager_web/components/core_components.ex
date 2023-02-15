@@ -609,24 +609,29 @@ defmodule BaseballDigitalManagerWeb.CoreComponents do
     """
   end
 
-  def display_batter_avg(assigns) do
-    ~H"""
-    <%= String.replace(
-      Decimal.to_string(
-        Decimal.round(
-          Decimal.div(Decimal.new(@batting_stats.hits), Decimal.new(@batting_stats.at_bats)),
-          3
-        )
-      ),
-      "0.",
-      "."
-    ) %>
-    """
-  end
-
   def display_pitching_IP(assigns) do
     ~H"""
     <%= Decimal.round(Decimal.div(@pitching_stats.outs_pitched, 3), 1) %>
+    """
+  end
+
+  def display_pitching_IP_last_game(assigns) do
+    text =
+      if assigns.pitching_stats == nil do
+        ""
+      else
+        ip = Decimal.round(Decimal.div(assigns.pitching_stats.outs_pitched, 3), 1)
+
+        days =
+          Timex.diff(assigns.current_date, assigns.pitching_stats.game_player.game.date, :days)
+
+        "#{ip} (#{days} days ago.)"
+      end
+
+    assigns = assign_new(assigns, :text, fn -> text end)
+
+    ~H"""
+    <%= @text %>
     """
   end
 

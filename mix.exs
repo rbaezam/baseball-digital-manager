@@ -52,7 +52,8 @@ defmodule BaseballDigitalManager.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:csv, "~> 2.4"}
+      {:csv, "~> 2.4"},
+      {:timex, "~> 3.7"}
     ]
   end
 

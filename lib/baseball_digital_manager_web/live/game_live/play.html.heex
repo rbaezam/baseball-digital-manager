@@ -1,0 +1,167 @@
+<div class="play-game-screen">
+  <div class="card w-100 bg-base-100 shadow-xl mb-4">
+    <div class="card-body">
+      <h2 class="card-title">Play Game</h2>
+
+      <div class="grid grid-flow-col auto-cols-max gap-4">
+        <div class="overflow-x-auto">
+          <h3><%= @current_batting_team.name %></h3>
+          <table class="table table-compact w-full">
+            <thead>
+              <tr>
+                <th>Batter</th>
+                <th>Pos</th>
+                <th>B</th>
+                <th>AB</th>
+                <th>H</th>
+                <th>R</th>
+                <th>HR</th>
+                <th>RBI</th>
+                <th>SB</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= for gp <- @visitor_players do %>
+                <tr class={
+                  if gp.id == @current_visitor_batter.id do
+                    "active"
+                  else
+                    ""
+                  end
+                }>
+                  <td>
+                    <.display_full_name player={gp.player} />
+                  </td>
+                  <td>
+                    <%= gp.player.main_position %>
+                  </td>
+                  <td>
+                    <%= gp.player.bats %>
+                  </td>
+                  <td>
+                    <%= gp.at_bats %>
+                  </td>
+                  <td>
+                    <%= gp.hits %>
+                  </td>
+                  <td>
+                    <%= gp.runs %>
+                  </td>
+                  <td>
+                    <%= gp.homeruns %>
+                  </td>
+                  <td>
+                    <%= gp.rbis %>
+                  </td>
+                  <td>
+                    <%= gp.stolen_bases %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <div class="columns-2">
+            <div>
+              Batting: <.display_full_name player={@current_batter.player} />
+            </div>
+            <div>
+              Pitching: <.display_full_name player={@current_pitcher.player} />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-center">Actions</h3>
+          <div class="grid grid-flow-col auto-cols-max gap-2 mt-2">
+            <button class="btn btn-xs " phx-click="enter-play" phx-value-play="k">K</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="k">G</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="k">P</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="k">L</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="k">F</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="k">FO</button>
+          </div>
+          <div class="grid grid-flow-col auto-cols-max gap-2 mt-2">
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">1B</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">2B</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">3B</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">HR</button>
+          </div>
+          <div class="grid grid-flow-col auto-cols-max gap-2 mt-2">
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">BB</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">HBP</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">IBB</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">E</button>
+          </div>
+          <div class="grid grid-flow-col auto-cols-max gap-2 mt-2">
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">WP</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">PB</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">BK</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">SB</button>
+            <button class="btn btn-xs" phx-click="enter-play" phx-value-play="1b">CS</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <h3><%= @game.local_team.name %></h3>
+          <table class="table table-compact w-full">
+            <thead>
+              <tr>
+                <th>Batter</th>
+                <th>Pos</th>
+                <th>B</th>
+                <th>AB</th>
+                <th>H</th>
+                <th>R</th>
+                <th>HR</th>
+                <th>RBI</th>
+                <th>SB</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= for gp <- @local_players do %>
+                <tr class={
+                  if gp.id == @current_local_batter.id do
+                    "active"
+                  else
+                    ""
+                  end
+                }>
+                  <td>
+                    <.display_full_name player={gp.player} />
+                  </td>
+                  <td>
+                    <%= gp.player.main_position %>
+                  </td>
+                  <td>
+                    <%= gp.player.bats %>
+                  </td>
+                  <td>
+                    <%= gp.at_bats %>
+                  </td>
+                  <td>
+                    <%= gp.hits %>
+                  </td>
+                  <td>
+                    <%= gp.runs %>
+                  </td>
+                  <td>
+                    <%= gp.homeruns %>
+                  </td>
+                  <td>
+                    <%= gp.rbis %>
+                  </td>
+                  <td>
+                    <%= gp.stolen_bases %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

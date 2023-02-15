@@ -13,24 +13,42 @@
       </h2>
 
       <div class="overflow-x-auto"></div>
-      <table class="table table-compact table-zebra w-full">
+      <table class="table table-compact w-full">
         <thead>
           <tr>
             <th>Batters</th>
             <th>B</th>
             <th>Pos</th>
+            <th>G</th>
             <th>AB</th>
-            <th>H</th>
             <th>R</th>
-            <th>AVG</th>
+            <th>H</th>
+            <th>2B</th>
+            <th>3B</th>
             <th>HR</th>
             <th>RBI</th>
+            <th>BB</th>
+            <th>SO</th>
             <th>SB</th>
+            <th>CS</th>
+            <th>AVG</th>
+            <th>OBS</th>
+            <th>SLG</th>
           </tr>
         </thead>
         <tbody>
           <%= for player <- @batters do %>
-            <tr>
+            <tr
+              phx-click="select-player"
+              phx-value-id={player.id}
+              class={
+                if @selected_player == player.id do
+                  "active"
+                else
+                  "hover"
+                end
+              }
+            >
               <td>
                 <%= player.first_name %> <%= player.last_name %>
               </td>
@@ -38,11 +56,25 @@
                 <%= player.bats %>
               </td>
               <td>
-                <%= player.main_position %>
+                <%= player.pos_short %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.games
+                else
+                  0
+                end %>
               </td>
               <td>
                 <%= if player.batting_stats != nil do
                   player.batting_stats.at_bats
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.runs
                 else
                   0
                 end %>
@@ -56,16 +88,16 @@
               </td>
               <td>
                 <%= if player.batting_stats != nil do
-                  player.batting_stats.runs
+                  player.batting_stats.doubles
                 else
                   0
                 end %>
               </td>
               <td>
-                <%= if player.batting_stats != nil && player.batting_stats.at_bats > 0 do
-                  display_batter_avg(player)
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.triples
                 else
-                  ".000"
+                  0
                 end %>
               </td>
               <td>
@@ -84,10 +116,40 @@
               </td>
               <td>
                 <%= if player.batting_stats != nil do
+                  player.batting_stats.base_on_balls
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.strikeouts
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
                   player.batting_stats.stolen_bases
                 else
                   0
                 end %>
+              </td>
+              <td>
+                <%= if player.batting_stats != nil do
+                  player.batting_stats.caught_stealing
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= player.avg %>
+              </td>
+              <td>
+                <%= player.obs %>
+              </td>
+              <td>
+                <%= player.slg %>
               </td>
             </tr>
           <% end %>
@@ -100,14 +162,14 @@
           <tr>
             <th>Pitchers</th>
             <th>T</th>
+            <th>W</th>
+            <th>L</th>
+            <th>ERA</th>
             <th>G</th>
             <th>GS</th>
             <th>CG</th>
-            <th>W</th>
-            <th>L</th>
             <th>S</th>
             <th>IP</th>
-            <th>ERA</th>
             <th>BB</th>
             <th>SO</th>
           </tr>
@@ -120,6 +182,27 @@
               </td>
               <td>
                 <%= player.throws %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.wins
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil do
+                  player.pitching_stats.losses
+                else
+                  0
+                end %>
+              </td>
+              <td>
+                <%= if player.pitching_stats != nil && player.pitching_stats.outs_pitched > 0 do
+                  display_pitching_era(player)
+                else
+                  "0.00"
+                end %>
               </td>
               <td>
                 <%= if player.pitching_stats != nil do
@@ -144,20 +227,6 @@
               </td>
               <td>
                 <%= if player.pitching_stats != nil do
-                  player.pitching_stats.wins
-                else
-                  0
-                end %>
-              </td>
-              <td>
-                <%= if player.pitching_stats != nil do
-                  player.pitching_stats.losses
-                else
-                  0
-                end %>
-              </td>
-              <td>
-                <%= if player.pitching_stats != nil do
                   player.pitching_stats.saves
                 else
                   0
@@ -168,13 +237,6 @@
                   display_pitching_IP(player)
                 else
                   0
-                end %>
-              </td>
-              <td>
-                <%= if player.pitching_stats != nil && player.pitching_stats.outs_pitched > 0 do
-                  display_pitching_era(player)
-                else
-                  "0.00"
                 end %>
               </td>
               <td>
