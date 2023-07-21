@@ -30,13 +30,13 @@
                   end
                 }>
                   <td>
-                    <.display_full_name player={gp.player} />
+                    <%= gp.full_name %>
                   </td>
                   <td>
-                    <%= gp.player.main_position %>
+                    <%= gp.pos_short %>
                   </td>
                   <td>
-                    <%= gp.player.bats %>
+                    <%= gp.bats %>
                   </td>
                   <td>
                     <%= gp.at_bats %>
@@ -65,10 +65,10 @@
         <div>
           <div class="columns-2">
             <div>
-              Batting: <.display_full_name player={@current_batter.player} />
+              Batting:
             </div>
             <div>
-              Pitching: <.display_full_name player={@current_pitcher.player} />
+              Pitching:
             </div>
           </div>
         </div>
@@ -130,13 +130,13 @@
                   end
                 }>
                   <td>
-                    <.display_full_name player={gp.player} />
+                    <%= gp.full_name %>
                   </td>
                   <td>
-                    <%= gp.player.main_position %>
+                    <%= gp.pos_short %>
                   </td>
                   <td>
-                    <%= gp.player.bats %>
+                    <%= gp.bats %>
                   </td>
                   <td>
                     <%= gp.at_bats %>

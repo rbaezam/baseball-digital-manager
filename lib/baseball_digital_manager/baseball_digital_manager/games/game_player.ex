@@ -3,7 +3,22 @@ defmodule BaseballDigitalManager.Games.GamePlayer do
   import Ecto.Changeset
 
   schema "game_players" do
-    field :position, :string
+    field :position, Ecto.Enum,
+      values: [
+        :pitcher,
+        :catcher,
+        :firstbaseman,
+        :secondbaseman,
+        :thirdbaseman,
+        :shortstop,
+        :leftfielder,
+        :centerfielder,
+        :rightfielder,
+        :infielder,
+        :outfielder,
+        :designated_hitter
+      ]
+
     field :is_local_team, :boolean, default: false
     field :lineup_position, :integer, default: 0
     belongs_to :team, BaseballDigitalManager.Teams.Team

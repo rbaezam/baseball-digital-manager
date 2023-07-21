@@ -1,5 +1,10 @@
 <div class="schedule-home p4">
   <h1>Schedule of <%= @library.name %></h1>
+  <div>
+    <.link navigate={~p"/library/#{@library.id}"} class="btn btn-secondary">
+      Goto Standings
+    </.link>
+  </div>
 
   <div class="grid grid-flow-col auto-cols-max">
     <div class="card bg-base-100 shadow-xl">
@@ -36,8 +41,20 @@
                 <%= game.local_errors %>
               </div>
             </div>
-            <div class="grid grid-cols-1 gap-4">
-              <div>W: Winner - L: Loser</div>
+            <div :if={game.is_completed} class="grid grid-cols-1 gap-4">
+              <div>
+                W: <%= game.pitcher_winner.player.last_name %> (<%= game.pitcher_winner.wins %> - <%= game.pitcher_winner.loses %>)
+                - L: <%= game.pitcher_loser.player.last_name %> (<%= game.pitcher_loser.wins %> - <%= game.pitcher_loser.loses %>)
+              </div>
+            </div>
+
+            <div :if={!game.is_completed}>
+              <.link navigate={~p"/game/#{@library.id}/setup/#{game.id}"} class="btn btn-primary">
+                Play Game
+              </.link>
+              <.link navigate={~p"/game/#{@library.id}/edit/#{game.id}"} class="btn btn-secondary">
+                Enter Stats
+              </.link>
             </div>
           </div>
         <% end %>
@@ -60,8 +77,17 @@
                 </div>
               </div>
               <div>
-                <.link navigate={~p"/game/#{@library.id}/new/#{game.id}"} class="btn btn-primary">
+                <.link
+                  navigate={~p"/game/#{@library.id}/setup/#{game.id}"}
+                  class="btn btn-primary"
+                >
                   Play Game
+                </.link>
+                <.link
+                  navigate={~p"/game/#{@library.id}/edit/#{game.id}"}
+                  class="btn btn-secondary"
+                >
+                  Enter Stats
                 </.link>
               </div>
             </div>

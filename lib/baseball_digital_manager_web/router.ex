@@ -22,9 +22,12 @@ defmodule BaseballDigitalManagerWeb.Router do
     live "/library/:id", LibraryLive.Index, :index
     live "/schedule/:library_id", ScheduleLive.Index, :index
     live "/team/:library_id/:id", TeamLive.Show, :show
+    live "/team/:library_id/:id/add-batter", TeamLive.Show, :add_batter
+    live "/team/:library_id/:id/add-pitcher", TeamLive.Show, :add_pitcher
     live "/game/:library_id/new", GameLive.New, :new
     live "/game/:library_id/new/:game_id", GameLive.New, :new
     live "/game/:library_id/edit/:id", GameLive.Edit, :edit
+    live "/game/:library_id/setup/:id", GameLive.Setup, :setup
     live "/game/:library_id/play/:id", GameLive.Play, :play
   end
 

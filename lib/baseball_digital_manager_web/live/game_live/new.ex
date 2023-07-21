@@ -1,4 +1,5 @@
 defmodule BaseballDigitalManagerWeb.GameLive.New do
+  alias BaseballDigitalManager.Seasons
   alias BaseballDigitalManager.{Players, Teams}
   use BaseballDigitalManagerWeb, :live_view
 
@@ -19,14 +20,15 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
 
     lineup_positions = ["", 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-    game = Games.get!(game_id)
+    season = Seasons.get_season_by_library_id(library_id)
+    game = Games.get!(game_id, season)
 
     visitor_players =
-      Players.get_players_from_team(game.visitor_team_id)
+      Players.get_players_from_team(game.visitor_team_id, season.id)
       |> Enum.map(fn item -> item |> Map.put(:is_selected, false) end)
 
     local_players =
-      Players.get_players_from_team(game.local_team_id)
+      Players.get_players_from_team(game.local_team_id, season.id)
       |> Enum.map(fn item -> item |> Map.put(:is_selected, false) end)
 
     game_form = %{
@@ -45,6 +47,7 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
       |> assign(:local_players, local_players)
       |> assign(:lineup_positions, lineup_positions)
       |> assign(:game_id, game_id)
+      |> assign(:season_id, season.id)
 
     {:ok, assigns}
   end
@@ -63,6 +66,8 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
       local_team: ""
     }
 
+    season = Seasons.get_season_by_library_id(library_id) |> IO.inspect(label: "-- seasons ---")
+
     assigns =
       socket
       |> assign(:library_id, library_id)
@@ -73,6 +78,7 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
       |> assign(:visitor_players, visitor_players)
       |> assign(:local_players, local_players)
       |> assign(:lineup_positions, lineup_positions)
+      |> assign(:season_id, season.id)
 
     {:ok, assigns}
   end
@@ -145,7 +151,7 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
           []
 
         visitor_id ->
-          Players.get_players_from_team(visitor_id)
+          Players.get_players_from_team(visitor_id, socket.assigns.season_id)
           |> Enum.map(fn item -> item |> Map.put(:is_selected, false) end)
       end
 
@@ -166,7 +172,7 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
           []
 
         local_id ->
-          Players.get_players_from_team(local_id)
+          Players.get_players_from_team(local_id, socket.assigns.season_id)
           |> Enum.map(fn item -> item |> Map.put(:is_selected, false) end)
           |> IO.inspect(label: "// local players //")
       end
@@ -264,8 +270,13 @@ defmodule BaseballDigitalManagerWeb.GameLive.New do
       socket.assigns.visitor_players
       |> Enum.map(fn item ->
         if item.id == String.to_integer(player_id) do
-          {lineup_position, _} = Integer.parse(lineup_position)
-          item |> Map.put(:lineup_position, String.to_integer(lineup_position))
+          lineup_position =
+            case Integer.parse(lineup_position) do
+              :error -> 0
+              {lineup_position, _} -> lineup_position
+            end
+
+          item |> Map.put(:lineup_position, lineup_position)
         else
           item
         end

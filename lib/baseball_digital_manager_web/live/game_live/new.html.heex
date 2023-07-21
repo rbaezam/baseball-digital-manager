@@ -7,7 +7,13 @@
   </div>
 
   <div class="border-2 p-2">
-    <.simple_form :let={f} for={:game_form} phx-change="validate-form" phx-submit="save-game">
+    <.simple_form
+      :let={f}
+      for={%{}}
+      as={:game_form}
+      phx-change="validate-form"
+      phx-submit="save-game"
+    >
       Select teams for game:
       <div class="grid grid-cols-2 p-2">
         <div class="px-2">
@@ -72,10 +78,10 @@
                         <%= Atom.to_string(player.main_position) |> String.capitalize() %>
                       </td>
                       <td class="p-1">
-                        <%= Atom.to_string(player.bats) |> String.capitalize() %>
+                        <%= player.bats |> String.capitalize() %>
                       </td>
                       <td class="p-1">
-                        <%= Atom.to_string(player.throws) |> String.capitalize() %>
+                        <%= player.throws |> String.capitalize() %>
                       </td>
                       <td>
                         <%= if player.main_position == :pitcher && player.last_game_pitching != nil do %>
@@ -152,10 +158,10 @@
                         <%= Atom.to_string(player.main_position) |> String.capitalize() %>
                       </td>
                       <td class="p-1">
-                        <%= Atom.to_string(player.bats) |> String.capitalize() %>
+                        <%= player.bats |> String.capitalize() %>
                       </td>
                       <td class="p-1">
-                        <%= Atom.to_string(player.throws) |> String.capitalize() %>
+                        <%= player.throws |> String.capitalize() %>
                       </td>
                       <td>
                         <%= if player.main_position == :pitcher && player.last_game_pitching != nil do %>

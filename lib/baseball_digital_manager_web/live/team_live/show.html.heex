@@ -1,4 +1,29 @@
 <div class="team-home p-4 border-2 w-full">
+  <.modal :if={@live_action in [:add_batter]} id="add-batter-modal" show>
+    <:title>Add Batter</:title>
+
+    <.live_component
+      module={BaseballDigitalManagerWeb.TeamLive.BatterComponent}
+      id="batter-component"
+      new_batter={@new_batter}
+      library_id={@library_id}
+      team={@team}
+      title="Batter information"
+    />
+  </.modal>
+  <.modal :if={@live_action in [:add_pitcher]} id="add-pitcher-modal" show>
+    <:title>Add Pitcher</:title>
+
+    <.live_component
+      module={BaseballDigitalManagerWeb.TeamLive.PitcherComponent}
+      id="pitcher-component"
+      new_pitcher={@new_pitcher}
+      library_id={@library_id}
+      team={@team}
+      title="Pitcher information"
+    />
+  </.modal>
+
   <div class="grid grid-cols-2">
     <div></div>
     <div>
@@ -9,14 +34,17 @@
   <div class="card w-100 bg-base-100 shadow-xl mb-4">
     <div class="card-body">
       <h2 class="card-title">
-        <%= @team.name %> <%= @team.nick_name %>
+        <%= @team.name %> <%= @team.nick_name %> (<%= @team.current_season_wins %> - <%= @team.current_season_losses %>)
       </h2>
 
       <div class="overflow-x-auto"></div>
-      <table class="table table-compact w-full">
+      <div class="row text-start">
+        <button class="btn btn-sm" phx-click="show-modal-add-batter">Add Batter</button>
+      </div>
+      <table class="table table-super-compact w-full">
         <thead>
           <tr>
-            <th>Batters</th>
+            <th>Batters (<%= length(@batters) %>)</th>
             <th>B</th>
             <th>Pos</th>
             <th>G</th>
@@ -25,15 +53,52 @@
             <th>H</th>
             <th>2B</th>
             <th>3B</th>
-            <th>HR</th>
-            <th>RBI</th>
+            <th>
+              <.link patch={
+                ~p"/team/#{@library_id}/#{@team.id}?sort_by=hr&sort_direction=#{@sort_direction}"
+              }>
+                HR
+              </.link>
+            </th>
+            <th>
+              <.link patch={
+                ~p"/team/#{@library_id}/#{@team.id}?sort_by=rbi&sort_direction=#{@sort_direction}"
+              }>
+                RBI
+              </.link>
+            </th>
             <th>BB</th>
             <th>SO</th>
             <th>SB</th>
             <th>CS</th>
-            <th>AVG</th>
-            <th>OBS</th>
-            <th>SLG</th>
+            <th>
+              <.link patch={
+                ~p"/team/#{@library_id}/#{@team.id}?sort_by=avg&sort_direction=#{@sort_direction}"
+              }>
+                AVG
+              </.link>
+            </th>
+            <th>
+              <.link patch={
+                ~p"/team/#{@library_id}/#{@team.id}?sort_by=obs&sort_direction=#{@sort_direction}"
+              }>
+                OBS
+              </.link>
+            </th>
+            <th>
+              <.link patch={
+                ~p"/team/#{@library_id}/#{@team.id}?sort_by=slg&sort_direction=#{@sort_direction}"
+              }>
+                SLG
+              </.link>
+            </th>
+            <th>
+              <.link patch={
+                ~p"/team/#{@library_id}/#{@team.id}?sort_by=ops&sort_direction=#{@sort_direction}"
+              }>
+                OPS
+              </.link>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -151,16 +216,24 @@
               <td>
                 <%= player.slg %>
               </td>
+              <td>
+                <span class="text-blue-500">
+                  <%= player.ops %>
+                </span>
+              </td>
             </tr>
           <% end %>
         </tbody>
       </table>
 
       <div class="overflow-x-auto"></div>
-      <table class="table table-compact table-zebra w-full">
+      <div class="row text-start">
+        <button class="btn btn-sm" phx-click="show-modal-add-pitcher">Add Pitcher</button>
+      </div>
+      <table class="table table-super-compact table-zebra w-full">
         <thead>
           <tr>
-            <th>Pitchers</th>
+            <th>Pitchers (<%= length(@pitchers) %>)</th>
             <th>T</th>
             <th>W</th>
             <th>L</th>
@@ -172,6 +245,7 @@
             <th>IP</th>
             <th>BB</th>
             <th>SO</th>
+            <th>WHIP</th>
           </tr>
         </thead>
         <tbody>
@@ -252,6 +326,9 @@
                 else
                   0
                 end %>
+              </td>
+              <td>
+                <%= player.whip %>
               </td>
             </tr>
           <% end %>

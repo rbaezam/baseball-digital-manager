@@ -1,0 +1,38 @@
+<div class="edit-batter card">
+  <div class="card-body">
+    <h2 class="card-title">Batter information</h2>
+
+    <.simple_form
+      :let={f}
+      for={@new_batter}
+      phx-change="validate-batter-form"
+      phx-submit="save-batter-form"
+    >
+      <div class="grid grid-cols-2">
+        <.input type="text" field={{f, :first_name}} placeholder="First Name" />
+        <.input type="text" field={{f, :last_name}} placeholder="Last Name" />
+      </div>
+      <div class="grid grid-cols-2">
+        <.input type="select" field={{f, :bats}} prompt="Bats" options={@bats_options} />
+        <.input type="select" field={{f, :throws}} prompt="Throws" options={@throws_options} />
+      </div>
+      <div class="grid grid-cols-2">
+        <.input
+          type="select"
+          field={{f, :main_position}}
+          prompt="Main Position"
+          options={@positions}
+        />
+        <.input
+          type="select"
+          field={{f, :secondary_position}}
+          prompt="Secondary Position"
+          options={@positions}
+        />
+      </div>
+
+      <button class="btn btn-primary">Save</button>
+      <a href={~p"/team/#{@library_id}/#{@team.id}"} class="btn btn-secondary">Cancel</a>
+    </.simple_form>
+  </div>
+</div>

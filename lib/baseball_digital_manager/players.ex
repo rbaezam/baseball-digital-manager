@@ -9,19 +9,46 @@ defmodule BaseballDigitalManager.Players do
 
   alias BaseballDigitalManager.Players.Player
 
-  def get_players_from_team(team_id) do
-    IO.inspect(team_id, label: "/// team id ///")
+  def create_batter(params) do
+    %Player{}
+    |> Player.changeset(params)
+    |> Repo.insert()
+  end
 
-    from(p in Player, where: p.team_id == ^team_id, order_by: [asc: p.lineup_position])
+  def create_pitcher(params) do
+    %Player{}
+    |> Player.changeset(params)
+    |> Repo.insert()
+  end
+
+  def get_players_from_team(team_id, season_id, sort_by \\ "name", sort_direction \\ "asc") do
+    sort_by_atom = String.to_atom(sort_by)
+    # players =
+    from(p in Player,
+      where: p.team_id == ^team_id,
+      order_by: [asc: :first_name],
+      preload: [
+        :batting_stats,
+        :pitching_stats,
+        :fielding_stats,
+        :game_batting_stats,
+        game_pitching_stats: [game_player: :game],
+        game_players: [:pitching_stats, :batting_stats]
+      ]
+    )
     |> Repo.all()
-    |> Repo.preload([
-      :batting_stats,
-      :pitching_stats,
-      :fielding_stats,
-      :game_batting_stats,
-      game_pitching_stats: [game_player: :game],
-      game_players: [:pitching_stats, :batting_stats]
-    ])
+    |> Enum.map(fn item ->
+      item
+      |> Map.put(
+        :batting_stats,
+        Stats.get_batting_stats_for_player(item.id, item.team_id, season_id)
+      )
+      |> Map.put(
+        :pitching_stats,
+        Stats.get_pitching_stats_for_player(item.id, item.team_id, season_id)
+      )
+      |> Map.put(:last_game_pitching, List.last(item.game_pitching_stats))
+    end)
     |> Enum.map(fn item ->
       %{
         id: item.id,
@@ -34,15 +61,26 @@ defmodule BaseballDigitalManager.Players do
         lineup_position: item.lineup_position,
         main_position: item.main_position,
         pos_short: format_short_pos(item.main_position),
-        batting_stats: List.first(item.batting_stats),
-        pitching_stats: List.first(item.pitching_stats),
+        batting_stats: item.batting_stats,
+        pitching_stats: item.pitching_stats,
+        last_game_pitching: item.last_game_pitching,
         fielding_stats: List.first(item.fielding_stats),
-        last_game_pitching: List.last(item.game_pitching_stats),
         avg: calculate_avg(item),
+        hr: item.batting_stats.homeruns,
+        rbi: item.batting_stats.rbis,
         obs: calculate_obs(item),
-        slg: calculate_slg(item)
+        slg: calculate_slg(item),
+        ops: calculate_ops(item),
+        era: calculate_era(item),
+        innings_pitched: calculate_ip(item),
+        whip: calculate_whip(item)
       }
     end)
+    |> Enum.sort_by(&sort_by_direction(&1, sort_by_atom), String.to_atom(sort_direction))
+  end
+
+  defp sort_by_direction(item, field) do
+    Map.get(item, field)
   end
 
   def update_batting_stats(player, attrs) do
@@ -64,9 +102,9 @@ defmodule BaseballDigitalManager.Players do
   end
 
   def calculate_avg(player) do
-    stats = List.first(player.batting_stats)
+    stats = player.batting_stats
 
-    if stats != nil do
+    if stats != nil and Decimal.compare(stats.at_bats, 0) != :eq do
       String.replace(
         Decimal.to_string(
           Decimal.round(
@@ -86,9 +124,9 @@ defmodule BaseballDigitalManager.Players do
   end
 
   def calculate_obs(player) do
-    stats = List.first(player.batting_stats)
+    stats = player.batting_stats
 
-    if stats != nil do
+    if stats != nil and Decimal.compare(stats.at_bats, 0) != :eq do
       on_base = stats.hits + stats.base_on_balls + stats.hit_by_pitch
 
       total_at_bats =
@@ -113,7 +151,7 @@ defmodule BaseballDigitalManager.Players do
   end
 
   def calculate_slg(player) do
-    stats = List.first(player.batting_stats)
+    stats = player.batting_stats
 
     if stats != nil && stats.at_bats > 0 do
       total_bases =
@@ -135,6 +173,92 @@ defmodule BaseballDigitalManager.Players do
       )
     else
       ".000"
+    end
+  end
+
+  def calculate_ops(player) do
+    stats = player.batting_stats
+
+    if stats != nil and Decimal.compare(stats.at_bats, 0) != :eq do
+      on_base = stats.hits + stats.base_on_balls + stats.hit_by_pitch
+
+      total_bases =
+        stats.doubles * 2 + stats.triples * 3 + stats.homeruns * 4 +
+          (stats.hits - stats.doubles - stats.triples - stats.homeruns)
+
+      total_at_bats =
+        stats.at_bats + stats.base_on_balls + stats.hit_by_pitch + stats.sacrifice_flies
+
+      slg_dec =
+        Decimal.div(
+          Decimal.new(total_bases),
+          Decimal.new(stats.at_bats)
+        )
+
+      obp_dec =
+        Decimal.div(
+          Decimal.new(on_base),
+          Decimal.new(total_at_bats)
+        )
+
+      String.replace(
+        Decimal.to_string(
+          Decimal.round(
+            Decimal.add(
+              slg_dec,
+              obp_dec
+            ),
+            3
+          )
+        ),
+        "0.",
+        "."
+      )
+    else
+      ".000"
+    end
+  end
+
+  def calculate_era(player) do
+    stats = player.pitching_stats
+
+    if stats != nil && stats.outs_pitched > 0 do
+      Decimal.to_string(
+        Decimal.round(
+          Decimal.mult(
+            9,
+            Decimal.div(
+              stats.earned_runs_allowed,
+              Decimal.div(stats.outs_pitched, 3)
+            )
+          ),
+          2
+        )
+      )
+    else
+      "0.00"
+    end
+  end
+
+  def calculate_ip(player) do
+    stats = player.pitching_stats
+
+    if stats != nil && stats.outs_pitched > 0 do
+      Decimal.round(Decimal.div(stats.outs_pitched, 3), 1)
+    else
+      0
+    end
+  end
+
+  def calculate_whip(player) do
+    stats = player.pitching_stats
+
+    if stats != nil && stats.outs_pitched > 0 do
+      walks_plus_hits = Decimal.new(stats.base_on_balls + stats.hits_allowed)
+      innings_pitched = Decimal.div(stats.outs_pitched, 3)
+      Decimal.div(walks_plus_hits, innings_pitched) |> Decimal.round(2) |> Decimal.to_string()
+    else
+      "0.00"
     end
   end
 

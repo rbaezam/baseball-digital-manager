@@ -1,0 +1,55 @@
+<div class="edit-pitcher card">
+  <div class="card-body">
+    <h2 class="card-title">Pitcher information</h2>
+
+    <.simple_form
+      :let={f}
+      for={@new_pitcher}
+      phx-change="validate-pitcher-form"
+      phx-submit="save-pitcher-form"
+    >
+      <div class="grid grid-cols-2">
+        <.input
+          type="text"
+          field={{f, :first_name}}
+          placeholder="First Name"
+          class="input input-bordered input-primary w-full"
+        />
+        <.input
+          type="text"
+          field={{f, :last_name}}
+          placeholder="Last Name"
+          class="input input-bordered input-primary w-full"
+        />
+      </div>
+      <div class="grid grid-cols-2">
+        <.input
+          type="select"
+          field={{f, :bats}}
+          prompt="Bats"
+          options={@bats_options}
+          class="select select-primary w-full max-w-xs"
+        />
+        <.input
+          type="select"
+          field={{f, :throws}}
+          prompt="Throws"
+          options={@throws_options}
+          class="select select-primary w-full max-w-xs"
+        />
+      </div>
+      <div class="grid grid-cols-2">
+        <.input
+          type="select"
+          field={{f, :pitcher_type}}
+          prompt="Pitcher Type"
+          options={@pitcher_types}
+          class="select select-primary w-full max-w-xs"
+        />
+      </div>
+
+      <button class="btn btn-primary">Save</button>
+      <a href={~p"/team/#{@library_id}/#{@team.id}"} class="btn btn-secondary">Cancel</a>
+    </.simple_form>
+  </div>
+</div>

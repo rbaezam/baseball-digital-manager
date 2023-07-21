@@ -5,52 +5,132 @@ defmodule BaseballDigitalManager.Stats do
 
   import Ecto.Query, warn: false
   alias BaseballDigitalManager.Repo
-  alias BaseballDigitalManager.Players.Player
   alias BaseballDigitalManager.Stats.{BattingStats, FieldingStats, PitchingStats}
 
-  def homerun_leaders(count \\ 5) do
+  def homerun_leaders(library, count \\ 5) do
     from(bs in BattingStats,
       preload: [player: [:team]],
+      join: season in assoc(bs, :season),
+      where: season.library_id == ^library.id,
       order_by: [desc: :homeruns],
       limit: ^count
     )
     |> Repo.all()
-    |> Enum.map(fn item ->
-      %{
-        id: item.player.id,
-        team_id: item.player.team.id,
-        team_name: item.player.team.nick_name,
-        first_name: item.player.first_name,
-        last_name: item.player.last_name,
-        full_name: "#{item.player.first_name} #{item.player.last_name}",
-        bats: item.player.bats,
-        lineup_position: item.player.lineup_position,
-        main_position: item.player.main_position,
-        batting_stats: item
-      }
-    end)
+    |> Enum.map(&create_batting_leader_map/1)
   end
 
-  def strikeout_leaders(count \\ 5) do
+  def rbis_leaders(library, count \\ 5) do
+    from(bs in BattingStats,
+      preload: [player: [:team]],
+      join: season in assoc(bs, :season),
+      where: season.library_id == ^library.id,
+      order_by: [desc: :rbis],
+      limit: ^count
+    )
+    |> Repo.all()
+    |> Enum.map(&create_batting_leader_map/1)
+  end
+
+  def runs_leaders(library, count \\ 5) do
+    from(bs in BattingStats,
+      preload: [player: [:team]],
+      join: season in assoc(bs, :season),
+      where: season.library_id == ^library.id,
+      order_by: [desc: :runs],
+      limit: ^count
+    )
+    |> Repo.all()
+    |> Enum.map(&create_batting_leader_map/1)
+  end
+
+  def hits_leaders(library, count \\ 5) do
+    from(bs in BattingStats,
+      preload: [player: [:team]],
+      join: season in assoc(bs, :season),
+      where: season.library_id == ^library.id,
+      order_by: [desc: :hits],
+      limit: ^count
+    )
+    |> Repo.all()
+    |> Enum.map(&create_batting_leader_map/1)
+  end
+
+  def stolen_bases_leaders(library, count \\ 5) do
+    from(bs in BattingStats,
+      preload: [player: [:team]],
+      join: season in assoc(bs, :season),
+      where: season.library_id == ^library.id,
+      order_by: [desc: :stolen_bases],
+      limit: ^count
+    )
+    |> Repo.all()
+    |> Enum.map(&create_batting_leader_map/1)
+  end
+
+  def create_batting_leader_map(item) do
+    %{
+      id: item.player.id,
+      team_id: item.player.team.id,
+      team_name: item.player.team.nick_name,
+      first_name: item.player.first_name,
+      last_name: item.player.last_name,
+      full_name: "#{item.player.first_name} #{item.player.last_name}",
+      bats: item.player.bats,
+      lineup_position: item.player.lineup_position,
+      main_position: item.player.main_position,
+      batting_stats: item
+    }
+  end
+
+  def strikeout_leaders(library, count \\ 5) do
     from(ps in PitchingStats,
       preload: [player: [:team]],
+      join: season in assoc(ps, :season),
+      where: season.library_id == ^library.id,
       order_by: [desc: :strikeouts],
       limit: ^count
     )
     |> Repo.all()
-    |> Enum.map(fn item ->
-      %{
-        id: item.player.id,
-        team_id: item.player.team.id,
-        team_name: item.player.team.nick_name,
-        first_name: item.player.first_name,
-        last_name: item.player.last_name,
-        full_name: "#{item.player.first_name} #{item.player.last_name}",
-        throws: item.player.throws,
-        main_position: item.player.main_position,
-        pitching_stats: item
-      }
-    end)
+    |> Enum.map(&create_pitching_leader_map/1)
+  end
+
+  def wins_leaders(library, count \\ 5) do
+    from(ps in PitchingStats,
+      preload: [player: [:team]],
+      join: season in assoc(ps, :season),
+      where: season.library_id == ^library.id,
+      order_by: [desc: :wins],
+      limit: ^count
+    )
+    |> Repo.all()
+    |> Enum.map(&create_pitching_leader_map/1)
+  end
+
+  def innings_pitched_leaders(library, count \\ 5) do
+    from(ps in PitchingStats,
+      preload: [player: [:team]],
+      join: season in assoc(ps, :season),
+      where: season.library_id == ^library.id,
+      order_by: [desc: :outs_pitched],
+      limit: ^count
+    )
+    |> Repo.all()
+    |> Enum.map(&create_pitching_leader_map/1)
+  end
+
+  def create_pitching_leader_map(item) do
+    %{
+      id: item.player.id,
+      team_id: item.player.team.id,
+      team_name: item.player.team.nick_name,
+      first_name: item.player.first_name,
+      last_name: item.player.last_name,
+      full_name: "#{item.player.first_name} #{item.player.last_name}",
+      throws: item.player.throws,
+      main_position: item.player.main_position,
+      pitching_stats: item,
+      innings_pitched: Decimal.round(Decimal.div(item.outs_pitched, 3), 1)
+    }
   end
 
   def get_batting_stats_for_player(player_id, team_id, season_id) do

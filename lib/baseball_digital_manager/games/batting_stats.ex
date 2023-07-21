@@ -19,7 +19,7 @@ defmodule BaseballDigitalManager.Games.GameBattingStats do
     field :stolen_bases, :integer, default: 0
     field :strikeouts, :integer, default: 0
     field :triples, :integer, default: 0
-    field :game_player_id, :id
+    belongs_to :game_player, BaseballDigitalManager.Games.GamePlayer
 
     timestamps()
   end

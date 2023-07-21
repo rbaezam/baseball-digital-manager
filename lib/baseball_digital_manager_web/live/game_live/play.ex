@@ -1,33 +1,37 @@
 defmodule BaseballDigitalManagerWeb.GameLive.Play do
   use BaseballDigitalManagerWeb, :live_view
 
-  alias BaseballDigitalManager.{Games, Players, Teams}
+  alias BaseballDigitalManager.{Games, Seasons}
 
   @impl true
-  def mount(%{"library_id" => _library_id, "id" => game_id}, _params, socket) do
-    game = Games.get!(game_id)
+  def mount(%{"library_id" => library_id, "id" => game_id}, _params, socket) do
+    season = Seasons.get_season_by_library_id(library_id)
+
+    game = Games.get!(game_id, season.id)
 
     initial_stats = %{at_bats: 0, hits: 0, runs: 0, homeruns: 0, rbis: 0, stolen_bases: 0}
 
     visitor_players =
       game.players
-      |> Enum.filter(&(&1.is_local_team == false && &1.position != "pitcher"))
+      |> Enum.filter(&(&1.main_position != "pitcher"))
       |> Enum.sort_by(& &1.lineup_position)
       |> Enum.map(fn item -> Map.merge(item, initial_stats) end)
+      |> List.first()
+      |> IO.inspect(label: "-- players --")
 
     visitor_pitchers =
       game.players
-      |> Enum.filter(&(&1.is_local_team == false && &1.position == "pitcher"))
+      |> Enum.filter(&(&1.main_position == "pitcher"))
 
     local_players =
       game.players
-      |> Enum.filter(&(&1.is_local_team && &1.position != "pitcher"))
+      |> Enum.filter(&(&1.main_position != "pitcher"))
       |> Enum.sort_by(& &1.lineup_position)
       |> Enum.map(fn item -> Map.merge(item, initial_stats) end)
 
     local_pitchers =
       game.players
-      |> Enum.filter(&(&1.is_local_team && &1.position == "pitcher"))
+      |> Enum.filter(&(&1.main_position == "pitcher"))
 
     current_visitor_pitcher = List.first(visitor_pitchers)
     current_local_pitcher = List.first(local_pitchers)

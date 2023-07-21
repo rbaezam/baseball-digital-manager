@@ -15,6 +15,7 @@ defmodule BaseballDigitalManager.Games.Game do
     field :visitor_hits, :integer, default: 0
     field :visitor_lob, :integer, default: 0
     field :visitor_runs, :integer, default: 0
+    field :is_completed, :boolean
     belongs_to :library, BaseballDigitalManager.Libraries.Library
     belongs_to :visitor_team, BaseballDigitalManager.Teams.Team
     belongs_to :local_team, BaseballDigitalManager.Teams.Team
@@ -40,7 +41,8 @@ defmodule BaseballDigitalManager.Games.Game do
       :local_lob,
       :library_id,
       :visitor_team_id,
-      :local_team_id
+      :local_team_id,
+      :is_completed
     ])
     |> cast_assoc(:players, with: &GamePlayer.changeset/2)
     |> validate_required([

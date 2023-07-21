@@ -7,18 +7,23 @@
         <div class="card-header">
           <%= league.name %>
         </div>
-        <div class="border-2 text-white p-2 bg-blue-500 rounded-md w-32 text-center my-2">
-          <.link navigate={~p"/game/#{@library.id}/new"}>New game</.link>
-          <.link navigate={~p"/schedule/#{@library.id}"}>Schedule</.link>
+        <div class="border-2 text-white p-2 rounded-md w-64 text-center my-2">
+          <.link navigate={~p"/game/#{@library.id}/new"} class="btn btn-secondary">
+            New game
+          </.link>
+          <.link navigate={~p"/schedule/#{@library.id}"} class="btn btn-secondary">
+            Schedule
+          </.link>
         </div>
 
         <div class="grid grid-flow-col auto-cols-max">
           <div class="border-2 p-2 m-2">
-            Batting Leaders
-            <div class="card w-96 bg-base-100 shadow-xl">
+            <div class="card card-compact w-96 bg-base-100 shadow-xl">
               <div class="card-body">
-                <h2 class="card-title">Homeruns</h2>
-                <table class="border">
+                <h2 class="card-title">Batting Leaders</h2>
+
+                <span class="font-semibold text-primary">Homeruns</span>
+                <table class="table table-super-compact">
                   <thead>
                     <tr>
                       <th>Player</th>
@@ -36,18 +41,98 @@
                     <% end %>
                   </tbody>
                 </table>
+
+                <span class="font-semibold text-primary">RBIs</span>
+                <table class="table table-super-compact">
+                  <thead>
+                    <tr>
+                      <th>Player</th>
+                      <th>Team</th>
+                      <th>RBI</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for player <- @rbi_leaders do %>
+                      <tr>
+                        <td><%= player.full_name %></td>
+                        <td><%= player.team_name %></td>
+                        <td><%= player.batting_stats.rbis %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+
+                <span class="font-semibold text-primary">Runs</span>
+                <table class="table table-super-compact">
+                  <thead>
+                    <tr>
+                      <th>Player</th>
+                      <th>Team</th>
+                      <th>Runs</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for player <- @runs_leaders do %>
+                      <tr>
+                        <td><%= player.full_name %></td>
+                        <td><%= player.team_name %></td>
+                        <td><%= player.batting_stats.runs %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+
+                <span class="font-semibold text-primary">Hits</span>
+                <table class="table table-super-compact">
+                  <thead>
+                    <tr>
+                      <th>Player</th>
+                      <th>Team</th>
+                      <th>Hits</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for player <- @hits_leaders do %>
+                      <tr>
+                        <td><%= player.full_name %></td>
+                        <td><%= player.team_name %></td>
+                        <td><%= player.batting_stats.hits %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+
+                <span class="font-semibold text-primary">Stolen Bases</span>
+                <table class="table table-super-compact">
+                  <thead>
+                    <tr>
+                      <th>Player</th>
+                      <th>Team</th>
+                      <th>SB</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for player <- @stolen_bases_leaders do %>
+                      <tr>
+                        <td><%= player.full_name %></td>
+                        <td><%= player.team_name %></td>
+                        <td><%= player.batting_stats.stolen_bases %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
 
-          <div class="border-2 p-2 my-2">
+          <div class="border-2 p-4 my-2">
             <%= for division <- league.divisions do %>
-              <div class="border-2 p-2 my-2">
+              <div class="p-2 my-2">
                 <div class="card-header">
-                  <%= division.name %>
+                  <span class="text-lg font-semibold"><%= division.name %></span>
                 </div>
-                <div class="border-2">
-                  <table class="border border-separate border-slate-500 w-full">
+                <div>
+                  <table class="table table-compact border-slate-500 w-full">
                     <thead>
                       <tr>
                         <th class="w-2/4">Team</th>
@@ -55,6 +140,8 @@
                         <th class="text-center">Losses</th>
                         <th class="text-center">Pct</th>
                         <th class="text-center">GB</th>
+                        <th class="text-center">AVG</th>
+                        <th class="text-center">HR</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -77,6 +164,12 @@
                           <td class="text-center">
                             <%= 0 %>
                           </td>
+                          <td class="text-center">
+                            <%= BaseballDigitalManager.Teams.get_team_batting_avg(team) %>
+                          </td>
+                          <td class="text-center">
+                            <%= BaseballDigitalManager.Teams.get_team_homeruns(team) %>
+                          </td>
                         </tr>
                       <% end %>
                     </tbody>
@@ -87,11 +180,32 @@
           </div>
 
           <div class="border-2 p-2 m-2">
-            Pitching Leaders
-            <div class="card w-96 bg-base-100 shadow-xl">
+            <div class="card card-compact w-96 bg-base-100 shadow-xl">
               <div class="card-body">
-                <h2 class="card-title">Strikeouts</h2>
-                <table class="border">
+                <h2 class="card-title">Pitching Leaders</h2>
+
+                <span class="font-semibold text-primary">Wins</span>
+                <table class="table table-super-compact">
+                  <thead>
+                    <tr>
+                      <th>Player</th>
+                      <th>Team</th>
+                      <th>W</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for player <- @wins_leaders do %>
+                      <tr>
+                        <td><%= player.full_name %></td>
+                        <td><%= player.team_name %></td>
+                        <td><%= player.pitching_stats.wins %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+
+                <span class="font-semibold text-primary">Strikeouts</span>
+                <table class="table table-super-compact">
                   <thead>
                     <tr>
                       <th>Player</th>
@@ -105,6 +219,26 @@
                         <td><%= player.full_name %></td>
                         <td><%= player.team_name %></td>
                         <td><%= player.pitching_stats.strikeouts %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+
+                <span class="font-semibold text-primary">IPs</span>
+                <table class="table table-super-compact">
+                  <thead>
+                    <tr>
+                      <th>Player</th>
+                      <th>Team</th>
+                      <th>IP</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for player <- @innings_pitched_leaders do %>
+                      <tr>
+                        <td><%= player.full_name %></td>
+                        <td><%= player.team_name %></td>
+                        <td><%= player.innings_pitched %></td>
                       </tr>
                     <% end %>
                   </tbody>

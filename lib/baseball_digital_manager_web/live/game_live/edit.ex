@@ -1,29 +1,35 @@
 defmodule BaseballDigitalManagerWeb.GameLive.Edit do
   use BaseballDigitalManagerWeb, :live_view
 
-  alias BaseballDigitalManager.Libraries
-  alias BaseballDigitalManager.{Games, Players, Teams}
+  alias BaseballDigitalManager.{Games, Libraries, Seasons, Teams}
 
   @impl true
   def mount(%{"library_id" => library_id, "id" => game_id}, _params, socket) do
-    game = Games.get!(game_id)
+    season = Seasons.get_season_by_library_id(library_id)
+    game = Games.get!(game_id, season.id)
     library = Libraries.get_library!(library_id)
 
     visitor_players =
       game.players
-      |> Enum.filter(&(&1.is_local_team == false && &1.position != "pitcher"))
+      |> Enum.filter(&(&1.is_local_team == false && &1.position != :pitcher))
+      |> Enum.sort_by(& &1.lineup_position, :asc)
+      |> set_stats_for_batters()
 
     visitor_pitchers =
       game.players
-      |> Enum.filter(&(&1.is_local_team == false && &1.position == "pitcher"))
+      |> Enum.filter(&(&1.is_local_team == false && &1.position == :pitcher))
+      |> set_stats_for_pitchers()
 
     local_players =
       game.players
-      |> Enum.filter(&(&1.is_local_team && &1.position != "pitcher"))
+      |> Enum.filter(&(&1.is_local_team && &1.position != :pitcher))
+      |> Enum.sort_by(& &1.lineup_position, :asc)
+      |> set_stats_for_batters()
 
     local_pitchers =
       game.players
-      |> Enum.filter(&(&1.is_local_team && &1.position == "pitcher"))
+      |> Enum.filter(&(&1.is_local_team && &1.position == :pitcher))
+      |> set_stats_for_pitchers()
 
     positions = [
       C: :catcher,
@@ -39,13 +45,23 @@ defmodule BaseballDigitalManagerWeb.GameLive.Edit do
 
     assigns =
       socket
-      |> assign(:game, game)
-      |> assign(:library, library)
-      |> assign(:visitor_players, visitor_players)
-      |> assign(:visitor_pitchers, visitor_pitchers)
-      |> assign(:local_players, local_players)
-      |> assign(:local_pitchers, local_pitchers)
-      |> assign(:positions, positions)
+      |> assign(
+        game: game,
+        library: library,
+        visitor_players: visitor_players,
+        visitor_pitchers: visitor_pitchers,
+        local_players: local_players,
+        local_pitchers: local_pitchers,
+        positions: positions,
+        visitor_hits: 0,
+        visitor_runs: 0,
+        visitor_errors: 0,
+        visitor_lob: 0,
+        local_hits: 0,
+        local_runs: 0,
+        local_errors: 0,
+        local_lob: 0
+      )
 
     {:ok, assigns}
   end
@@ -58,11 +74,32 @@ defmodule BaseballDigitalManagerWeb.GameLive.Edit do
 
   def handle_event("save-game", params, socket) do
     IO.inspect(params, label: "// save game //")
+    game = socket.assigns.game
+
+    visitor_runs = socket.assigns.visitor_runs
+    local_runs = socket.assigns.local_runs
 
     attrs = %{
-      visitor_runs: String.to_integer(params["games-team-visitor-runs"]),
-      local_runs: String.to_integer(params["games-team-local-runs"])
+      visitor_runs: visitor_runs,
+      local_runs: local_runs,
+      visitor_hits: socket.assigns.visitor_hits,
+      local_hits: socket.assigns.local_hits,
+      local_errors: socket.assigns.local_errors,
+      visitor_errors: socket.assigns.visitor_errors,
+      visitor_lob: 0,
+      local_lob: 0,
+      is_completed: true
     }
+
+    {team_winner, team_loser} =
+      if visitor_runs > local_runs do
+        {game.visitor_team_id, game.local_team_id}
+      else
+        {game.local_team_id, game.visitor_team_id}
+      end
+
+    Teams.add_game_win(team_winner)
+    Teams.add_game_lost(team_loser)
 
     game =
       socket.assigns.game
@@ -142,6 +179,8 @@ defmodule BaseballDigitalManagerWeb.GameLive.Edit do
 
     game_player.batting_stats |> Map.put(stat_atom, int_value)
 
+    socket = update_visitor_team_stat(stat, socket)
+
     {:noreply, socket}
   end
 
@@ -181,6 +220,8 @@ defmodule BaseballDigitalManagerWeb.GameLive.Edit do
     Games.update_fielding_stats(game_player.fielding_stats, %{:"#{stat}" => int_value})
 
     game_player.fielding_stats |> Map.put(stat_atom, int_value)
+
+    socket = update_visitor_team_stat(stat, socket)
 
     {:noreply, socket}
   end
@@ -247,6 +288,8 @@ defmodule BaseballDigitalManagerWeb.GameLive.Edit do
 
     game_player.batting_stats |> Map.put(stat_atom, int_value)
 
+    socket = update_local_team_stat(stat, socket)
+
     {:noreply, socket}
   end
 
@@ -287,6 +330,8 @@ defmodule BaseballDigitalManagerWeb.GameLive.Edit do
 
     game_player.fielding_stats |> Map.put(stat_atom, int_value)
 
+    socket = update_local_team_stat(stat, socket)
+
     {:noreply, socket}
   end
 
@@ -315,5 +360,166 @@ defmodule BaseballDigitalManagerWeb.GameLive.Edit do
     game_player.pitching_stats |> Map.put(stat_atom, value)
 
     {:noreply, socket}
+  end
+
+  defp update_visitor_team_stat("hits", socket) do
+    hits =
+      socket.assigns.game.players
+      |> Enum.filter(&(&1.is_local_team == false && &1.position != :pitcher))
+      |> Enum.reduce(0, fn player, hits ->
+        player.batting_stats.hits + hits
+      end)
+
+    IO.inspect(hits, label: "// visitor hits //")
+
+    assign(socket, visitor_hits: hits)
+  end
+
+  defp update_visitor_team_stat("runs", socket) do
+    runs =
+      socket.assigns.game.players
+      |> Enum.filter(&(&1.is_local_team == false && &1.position != :pitcher))
+      |> Enum.reduce(0, fn player, runs ->
+        player.batting_stats.runs + runs
+      end)
+
+    assign(socket, visitor_runs: runs)
+  end
+
+  defp update_visitor_team_stat("errors", socket) do
+    errors =
+      socket.assigns.game.players
+      |> Enum.filter(&(&1.is_local_team == false && &1.position != :pitcher))
+      |> Enum.reduce(0, fn player, errors ->
+        player.fielding_stats.errors + errors
+      end)
+
+    assign(socket, visitor_errors: errors)
+  end
+
+  defp update_visitor_team_stat(_stat, socket), do: socket
+
+  defp update_local_team_stat("hits", socket) do
+    hits =
+      socket.assigns.game.players
+      |> Enum.filter(&(&1.is_local_team == true && &1.position != :pitcher))
+      |> Enum.reduce(0, fn player, hits ->
+        player.batting_stats.hits + hits
+      end)
+
+    assign(socket, local_hits: hits)
+  end
+
+  defp update_local_team_stat("runs", socket) do
+    runs =
+      socket.assigns.game.players
+      |> Enum.filter(&(&1.is_local_team == true && &1.position != :pitcher))
+      |> Enum.reduce(0, fn player, runs ->
+        player.batting_stats.runs + runs
+      end)
+
+    assign(socket, local_runs: runs)
+  end
+
+  defp update_local_team_stat("errors", socket) do
+    errors =
+      socket.assigns.game.players
+      |> Enum.filter(&(&1.is_local_team == true && &1.position != :pitcher))
+      |> Enum.reduce(0, fn player, errors ->
+        player.fielding_stats.errors + errors
+      end)
+
+    assign(socket, local_errors: errors)
+  end
+
+  defp update_local_team_stat(_stat, socket), do: socket
+
+  defp set_stats_for_batters(batters) do
+    batters
+    |> Enum.map(fn item ->
+      if item.batting_stats == nil do
+        attrs = %{
+          at_bats: 0,
+          hits: 0,
+          doubles: 0,
+          triples: 0,
+          homeruns: 0,
+          runs: 0,
+          rbis: 0,
+          base_on_balls: 0,
+          intentional_base_on_balls: 0,
+          strikeouts: 0,
+          stolen_bases: 0,
+          caught_stealing: 0,
+          sacrifice_hits: 0,
+          sacrifice_flies: 0,
+          gidp: 0,
+          hbp: 0
+        }
+
+        Map.put(item, :batting_stats, attrs)
+      else
+        item
+      end
+    end)
+    |> Enum.map(fn item ->
+      if item.fielding_stats == nil do
+        attrs = %{
+          assists: 0,
+          putouts: 0,
+          errors: 0,
+          passballs: 0
+        }
+
+        Map.put(item, :fielding_stats, attrs)
+      else
+        item
+      end
+    end)
+  end
+
+  defp set_stats_for_pitchers(pitchers) do
+    pitchers
+    |> Enum.map(fn item ->
+      if item.pitching_stats == nil do
+        attrs = %{
+          outs_pitched: 0,
+          batters_faced: 0,
+          hits: 0,
+          runs: 0,
+          earned_runs: 0,
+          homeruns_allowed: 0,
+          base_on_balls: 0,
+          strikeouts: 0,
+          wild_pitches: 0,
+          hits_by_pitch: 0,
+          intentional_base_on_balls: 0,
+          balks: 0,
+          started_game: false,
+          closed_game: false,
+          won_game: false,
+          lost_game: false,
+          saved_game: false
+        }
+
+        Map.put(item, :pitching_stats, attrs)
+      else
+        item
+      end
+    end)
+    |> Enum.map(fn item ->
+      if item.fielding_stats == nil do
+        attrs = %{
+          assists: 0,
+          putouts: 0,
+          errors: 0,
+          passballs: 0
+        }
+
+        Map.put(item, :fielding_stats, attrs)
+      else
+        item
+      end
+    end)
   end
 end

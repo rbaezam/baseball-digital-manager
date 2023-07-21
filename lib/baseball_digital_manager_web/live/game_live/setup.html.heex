@@ -1,0 +1,484 @@
+<div class="setup-game-screen">
+  <div class="grid grid-cols-2">
+    <div>Setup Game (<%= @game.date %>)</div>
+    <div>
+      <.link navigate={~p"/schedule/#{@library.id}"} class="btn btn-secondary">
+        Goto Schedule
+      </.link>
+      <.link navigate={~p"/library/#{@library.id}"} class="btn btn-secondary">
+        Goto Standings
+      </.link>
+
+      <button class="btn btn-primary" phx-click="play-game">Play Game</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <a
+      class={
+        if @active_tab == :visitor do
+          "tab tab-lifted tab-active"
+        else
+          "tab tab-lifted"
+        end
+      }
+      phx-click="change-tab"
+      phx-value-tab="visitor"
+    >
+      Visitor Team - <%= @game.visitor_team.nick_name %> (<%= @game.visitor_team.current_season_wins %> - <%= @game.visitor_team.current_season_losses %>)
+    </a>
+    <a
+      class={
+        if @active_tab == :local do
+          "tab tab-lifted tab-active"
+        else
+          "tab tab-lifted"
+        end
+      }
+      phx-click="change-tab"
+      phx-value-tab="local"
+    >
+      Local Team - <%= @game.local_team.nick_name %> (<%= @game.local_team.current_season_wins %> - <%= @game.local_team.current_season_losses %>)
+    </a>
+  </div>
+
+  <div :if={@active_tab == :visitor} class="border border-gray-300">
+    <div>
+      <div class="grid grid-cols-2">
+        <div>
+          <div class="card card-compact w-100 bg-base-100 shadow-md mx-4 mb-2">
+            <div class="card-body">
+              <div class="card-title">Batters</div>
+              <table class="table table-compact w-full">
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <th>Name</th>
+                    <th>Pos</th>
+                    <th>B</th>
+                    <th>G</th>
+                    <th>AB</th>
+                    <th>H</th>
+                    <th>R</th>
+                    <th>Avg</th>
+                    <th>HR</th>
+                    <th>RBI</th>
+                    <th>BB</th>
+                    <th>SO</th>
+                    <th>SB</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr :for={batter <- @visitor_batters} class="hover">
+                    <td>
+                      <input
+                        type="radio"
+                        name="visitor_batter"
+                        phx-click="select-visitor-batter"
+                        phx-value-id={batter.id}
+                      />
+                    </td>
+                    <td>
+                      <%= batter.full_name %>
+                    </td>
+                    <td>
+                      <%= batter.pos_short %>
+                    </td>
+                    <td>
+                      <%= batter.bats %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.games %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.at_bats %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.hits %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.runs %>
+                    </td>
+                    <td>
+                      <%= batter.avg %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.homeruns %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.rbis %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.base_on_balls %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.strikeouts %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.stolen_bases %>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card card-compact w-100 bg-base-100 shadow-md mx-4">
+            <div class="card-body">
+              <div class="card-title">Pitchers</div>
+              <table class="table table-compact w-full">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Pos</th>
+                    <th>T</th>
+                    <th>G</th>
+                    <th>GS</th>
+                    <th>IP</th>
+                    <th>W</th>
+                    <th>L</th>
+                    <th>ERA</th>
+                    <th>Sv</th>
+                    <th>BB</th>
+                    <th>SO</th>
+                    <th>&nbsp;</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr :for={pitcher <- @visitor_pitchers} class="hover">
+                    <td>
+                      <%= pitcher.full_name %>
+                    </td>
+                    <td>
+                      <%= pitcher.pos_short %>
+                    </td>
+                    <td>
+                      <%= pitcher.throws %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.games %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.games_started %>
+                    </td>
+                    <td>
+                      <%= pitcher.innings_pitched %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.wins %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.losses %>
+                    </td>
+                    <td>
+                      <%= pitcher.era %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.saves %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.base_on_balls %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.strikeouts %>
+                    </td>
+                    <td>
+                      <button
+                        class="btn btn-secondary btn-xs"
+                        phx-click="select-visitor-starting-pitcher"
+                        phx-value-id={pitcher.id}
+                      >
+                        Select
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card w-100 bg-base-100 shadow-md mx-4">
+          <div class="card-body">
+            <div class="card-title">Lineup</div>
+
+            <div class="mb-4">
+              <.simple_form for={%{}} as={:lineup_form} phx-change="select-visitor-lineup">
+                <.input
+                  type="select"
+                  label="Saved lineups:"
+                  id="visitor-lineup-select"
+                  name="visitor-lineup-select"
+                  class="select select-bordered select-primary w-full max-w-xs mb-2"
+                  errors={[]}
+                  prompt="SELECT ITEM"
+                  options={@visitor_saved_lineups}
+                  value={@visitor_selected_lineup}
+                >
+                </.input>
+              </.simple_form>
+              <button class="btn btn-secondary" phx-click="save-visitor-lineup">
+                Save current lineup
+              </button>
+            </div>
+
+            <table class="table table-compact">
+              <thead>
+                <tr>
+                  <th>&nbsp;</th>
+                  <th class="text-center">Order</th>
+                  <th>Name</th>
+                  <th class="text-center">Pos</th>
+                  <th class="text-center">B</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr :for={item <- @visitor_lineup_items} :if={item != nil}>
+                  <td class="w-24 text-center">
+                    <button
+                      class="btn btn-secondary btn-xs"
+                      phx-click="assign-visitor-batter"
+                      phx-value-order={item.order}
+                    >
+                      Assign
+                    </button>
+                  </td>
+                  <td class="w-24 text-center">
+                    <%= item.order %>
+                  </td>
+                  <td>
+                    <%= item.full_name %>
+                  </td>
+                  <td class="w-32 text-center">
+                    <%= item.position %>
+                  </td>
+                  <td class="w-24 text-center">
+                    <%= item.bats %>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="card-title">Starting Pitcher</div>
+            <div>
+              <%= @visitor_starting_pitcher.full_name %>
+              <%= @visitor_starting_pitcher.pitching_stats.wins %> - <%= @visitor_starting_pitcher.pitching_stats.losses %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div :if={@active_tab == :local} class="border border-gray-300">
+    <div>
+      <div class="grid grid-cols-2">
+        <div>
+          <div class="card card-compact w-100 bg-base-100 shadow-md mx-4 mb-2">
+            <div class="card-body">
+              <div class="card-title">Batters</div>
+              <table class="table table-compact w-full">
+                <thead>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <th>Name</th>
+                    <th>Pos</th>
+                    <th>B</th>
+                    <th>G</th>
+                    <th>AB</th>
+                    <th>H</th>
+                    <th>R</th>
+                    <th>Avg</th>
+                    <th>HR</th>
+                    <th>RBI</th>
+                    <th>SB</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr :for={batter <- @local_batters} class="hover">
+                    <td>
+                      <input
+                        type="radio"
+                        name="local_batter"
+                        phx-click="select-local-batter"
+                        phx-value-id={batter.id}
+                      />
+                    </td>
+                    <td>
+                      <%= batter.full_name %>
+                    </td>
+                    <td>
+                      <%= batter.pos_short %>
+                    </td>
+                    <td>
+                      <%= batter.bats %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.games %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.at_bats %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.hits %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.runs %>
+                    </td>
+                    <td>
+                      <%= batter.avg %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.homeruns %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.rbis %>
+                    </td>
+                    <td>
+                      <%= batter.batting_stats.stolen_bases %>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card card-compact w-100 bg-base-100 shadow-md mx-4">
+            <div class="card-body">
+              <div class="card-title">Pitchers</div>
+              <table class="table table-compact w-full">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Pos</th>
+                    <th>T</th>
+                    <th>G</th>
+                    <th>GS</th>
+                    <th>IP</th>
+                    <th>W</th>
+                    <th>L</th>
+                    <th>ERA</th>
+                    <th>Sv</th>
+                    <th>&nbsp;</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr :for={pitcher <- @local_pitchers} class="hover">
+                    <td>
+                      <%= pitcher.full_name %>
+                    </td>
+                    <td>
+                      <%= pitcher.pos_short %>
+                    </td>
+                    <td>
+                      <%= pitcher.throws %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.games %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.games_started %>
+                    </td>
+                    <td>
+                      <%= pitcher.innings_pitched %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.wins %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.losses %>
+                    </td>
+                    <td>
+                      <%= pitcher.era %>
+                    </td>
+                    <td>
+                      <%= pitcher.pitching_stats.saves %>
+                    </td>
+                    <td>
+                      <button
+                        class="btn btn-secondary btn-xs"
+                        phx-click="select-local-starting-pitcher"
+                        phx-value-id={pitcher.id}
+                      >
+                        Select
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card w-100 bg-base-100 shadow-md mx-4">
+          <div class="card-body">
+            <div class="card-title">Lineup</div>
+
+            <div class="mb-4">
+              <.simple_form for={%{}} as={:lineup_form} phx-change="select-local-lineup">
+                <.input
+                  type="select"
+                  label="Saved lineups:"
+                  id="local-lineup-select"
+                  name="local-lineup-select"
+                  class="select select-bordered select-primary w-full max-w-xs mb-2"
+                  errors={[]}
+                  prompt="SELECT ITEM"
+                  options={@local_saved_lineups}
+                  value={@local_selected_lineup}
+                >
+                </.input>
+              </.simple_form>
+              <button class="btn btn-secondary" phx-click="save-local-lineup">
+                Save current lineup
+              </button>
+            </div>
+
+            <table class="table table-compact">
+              <thead>
+                <tr>
+                  <th>&nbsp;</th>
+                  <th class="text-center">Order</th>
+                  <th>Name</th>
+                  <th class="text-center">Pos</th>
+                  <th class="text-center">B</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr :for={item <- @local_lineup_items} :if={item != nil}>
+                  <td class="w-24 text-center">
+                    <button
+                      class="btn btn-secondary btn-xs"
+                      phx-click="assign-local-batter"
+                      phx-value-order={item.order}
+                    >
+                      Assign
+                    </button>
+                  </td>
+                  <td class="w-24 text-center">
+                    <%= item.order %>
+                  </td>
+                  <td>
+                    <%= item.full_name %>
+                  </td>
+                  <td class="w-32 text-center">
+                    <%= item.position %>
+                  </td>
+                  <td class="w-24 text-center">
+                    <%= item.bats %>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="card-title">Starting Pitcher</div>
+            <div>
+              <%= @local_starting_pitcher.full_name %>
+              <%= @local_starting_pitcher.pitching_stats.wins %> - <%= @local_starting_pitcher.pitching_stats.losses %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

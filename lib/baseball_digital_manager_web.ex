@@ -17,8 +17,6 @@ defmodule BaseballDigitalManagerWeb do
   those modules here.
   """
 
-  import Phoenix.LiveView.Helpers
-
   def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
   def router do

@@ -6,28 +6,60 @@
     </div>
   </div>
 
-  <.simple_form :let={f} for={:game_form} phx-change="validate-form" phx-submit="save-game">
+  <.simple_form for={%{}} as={:game_form} phx-change="validate-form" phx-submit="save-game">
     <div class="card w-100 bg-base-100 shadow-xl mb-4">
       <div class="card-body">
-        <button class="btn btn-primary w-24">Submit Game</button>
+        <button class="btn btn-primary w-24 mx-2" type="submit">Submit Game</button>
+        <button class="btn btn-primary w-24 mx-2" type="button">Delete Game</button>
       </div>
     </div>
 
     <div class="card w-100 bg-base-100 shadow-xl mb-4">
       <div class="card-body">
         <h2 class="card-title">
-          <%= @game.visitor_team.name %> <%= @game.visitor_team.nick_name %>
-          <.input
-            type="number"
-            id="games-team-visitor-runs"
-            name="games-team-visitor-runs"
-            value={@game.visitor_runs}
-            errors={[]}
-            class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
-            style="padding-left: 4px; padding-right: 4px;"
-            phx-change="change-visitor-team-runs"
-            phx-value-id={@game.visitor_team.id}
-          />
+          <div class="grid grid-cols-4">
+            <div class="mr-4">
+              <%= @game.visitor_team.name %> <%= @game.visitor_team.nick_name %>
+            </div>
+            <div>
+              <.input
+                type="number"
+                id="games-team-visitor-runs"
+                name="games-team-visitor-runs"
+                value={@visitor_runs}
+                errors={[]}
+                class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                div_class="inline-block"
+                style="padding-left: 4px; padding-right: 4px;"
+                phx-change="change-visitor-team-runs"
+                phx-value-id={@game.visitor_team.id}
+              />
+              <.input
+                type="number"
+                id="games-team-visitor-hits"
+                name="games-team-visitor-hits"
+                value={@visitor_hits}
+                errors={[]}
+                class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                div_class="inline-block"
+                style="padding-left: 4px; padding-right: 4px;"
+                phx-change="change-visitor-team-hits"
+                phx-value-id={@game.visitor_team.id}
+              />
+              <.input
+                type="number"
+                id="games-team-visitor-errors"
+                name="games-team-visitor-errors"
+                value={@visitor_errors}
+                errors={[]}
+                class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                div_class="inline-block"
+                style="padding-left: 4px; padding-right: 4px;"
+                phx-change="change-visitor-team-errors"
+                phx-value-id={@game.visitor_team.id}
+              />
+            </div>
+          </div>
         </h2>
 
         <div class="overflow-x-auto"></div>
@@ -70,7 +102,7 @@
                     value={gp.position}
                     type="select"
                     errors={[]}
-                    class="select select-primary w-full max-w-xs"
+                    class="select select-primary select-sm w-full max-w-xs"
                     phx-blur="change-visitor-batter-position"
                     phx-value-id={gp.id}
                   />
@@ -617,26 +649,12 @@
                     name={"games-visitor-pitcher-save-#{gp.id}"}
                     value={gp.pitching_stats.saved_game}
                     class="p-1 checkbox checkbox-primary"
-                    phx-click="toggle-player"
+                    phx-click="toggle-visitor-pitcher-value"
                     phx-value-stat="saved_game"
                     phx-value-id={gp.id}
                   />
                 </td>
 
-                <td class="text-center">
-                  <.input
-                    type="number"
-                    id={"games-visitor-player-outs-#{gp.id}"}
-                    name={"games-visitor-player-outs-#{gp.id}"}
-                    value={gp.fielding_stats.putouts}
-                    errors={[]}
-                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
-                    style="padding-left: 4px; padding-right: 4px;"
-                    phx-blur="change-visitor-fielding-value"
-                    phx-value-id={gp.id}
-                    phx-value-stat="putouts"
-                  />
-                </td>
                 <td class="text-center">
                   <.input
                     type="number"
@@ -649,6 +667,20 @@
                     phx-blur="change-visitor-fielding-value"
                     phx-value-id={gp.id}
                     phx-value-stat="assists"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-visitor-player-outs-#{gp.id}"}
+                    name={"games-visitor-player-outs-#{gp.id}"}
+                    value={gp.fielding_stats.putouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-visitor-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="putouts"
                   />
                 </td>
                 <td class="text-center">
@@ -675,18 +707,49 @@
     <div class="card w-100 bg-base-100 shadow-xl mb-8">
       <div class="card-body">
         <h2 class="card-title">
-          <%= @game.local_team.name %> <%= @game.local_team.nick_name %>
-          <.input
-            type="number"
-            id="games-team-local-runs"
-            name="games-team-local-runs"
-            value={@game.local_runs}
-            errors={[]}
-            class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
-            style="padding-left: 4px; padding-right: 4px;"
-            phx-change="change-local-team-runs"
-            phx-value-id={@game.local_team.id}
-          />
+          <div class="grid grid-cols-4">
+            <div class="mr-4">
+              <%= @game.local_team.name %> <%= @game.local_team.nick_name %>
+            </div>
+            <div>
+              <.input
+                type="number"
+                id="games-team-local-runs"
+                name="games-team-local-runs"
+                value={@local_runs}
+                errors={[]}
+                class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                div_class="inline-block"
+                style="padding-left: 4px; padding-right: 4px;"
+                phx-change="change-local-team-runs"
+                phx-value-id={@game.local_team.id}
+              />
+              <.input
+                type="number"
+                id="games-team-local-hits"
+                name="games-team-local-hits"
+                value={@local_hits}
+                errors={[]}
+                class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                div_class="inline-block"
+                style="padding-left: 4px; padding-right: 4px;"
+                phx-change="change-local-team-hits"
+                phx-value-id={@game.local_team.id}
+              />
+              <.input
+                type="number"
+                id="games-team-local-errors"
+                name="games-team-local-errors"
+                value={@local_errors}
+                errors={[]}
+                class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                div_class="inline-block"
+                style="padding-left: 4px; padding-right: 4px;"
+                phx-change="change-local-team-errors"
+                phx-value-id={@game.local_team.id}
+              />
+            </div>
+          </div>
         </h2>
 
         <div class="overflow-x-auto"></div>
@@ -729,7 +792,7 @@
                     value={gp.position}
                     type="select"
                     errors={[]}
-                    class="select select-primary w-full max-w-xs"
+                    class="select select-primary select-sm w-full max-w-xs"
                     phx-blur="change-local-batter-position"
                     phx-value-id={gp.id}
                   />
@@ -739,7 +802,7 @@
                     type="number"
                     id={"games-local-player-ab-#{gp.id}"}
                     name={"games-local-player-ab-#{gp.id}"}
-                    value={gp.batting_stats.hits}
+                    value={gp.batting_stats.at_bats}
                     errors={[]}
                     class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
                     style="padding-left: 4px; padding-right: 4px;"
@@ -1276,26 +1339,12 @@
                     name={"games-local-pitcher-save-#{gp.id}"}
                     value={gp.pitching_stats.saved_game}
                     class="p-1 checkbox checkbox-primary"
-                    phx-click="toggle-player"
+                    phx-click="toggle-local-pitcher-value"
                     phx-value-stat="saved_game"
                     phx-value-id={gp.id}
                   />
                 </td>
 
-                <td class="text-center">
-                  <.input
-                    type="number"
-                    id={"games-local-player-outs-#{gp.id}"}
-                    name={"games-local-player-outs-#{gp.id}"}
-                    value={gp.fielding_stats.putouts}
-                    errors={[]}
-                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
-                    style="padding-left: 4px; padding-right: 4px;"
-                    phx-blur="change-local-fielding-value"
-                    phx-value-id={gp.id}
-                    phx-value-stat="putouts"
-                  />
-                </td>
                 <td class="text-center">
                   <.input
                     type="number"
@@ -1308,6 +1357,20 @@
                     phx-blur="change-local-fielding-value"
                     phx-value-id={gp.id}
                     phx-value-stat="assists"
+                  />
+                </td>
+                <td class="text-center">
+                  <.input
+                    type="number"
+                    id={"games-local-player-outs-#{gp.id}"}
+                    name={"games-local-player-outs-#{gp.id}"}
+                    value={gp.fielding_stats.putouts}
+                    errors={[]}
+                    class="input input-bordered input-primary text-center input-sm w-12 max-w-xs"
+                    style="padding-left: 4px; padding-right: 4px;"
+                    phx-blur="change-local-fielding-value"
+                    phx-value-id={gp.id}
+                    phx-value-stat="putouts"
                   />
                 </td>
                 <td class="text-center">

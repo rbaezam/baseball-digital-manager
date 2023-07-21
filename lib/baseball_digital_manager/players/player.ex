@@ -13,6 +13,7 @@ defmodule BaseballDigitalManager.Players.Player do
     field :throws, Ecto.Enum, values: [:right, :left]
     field :weight, :integer
     field :lineup_position, :integer, default: 0
+    field :fatigue_points, :integer, default: 0
 
     field :main_position, Ecto.Enum,
       values: [
@@ -86,12 +87,7 @@ defmodule BaseballDigitalManager.Players.Player do
       :last_name,
       :first_name,
       :bats,
-      :throws,
-      :height,
-      :weight,
-      :date_of_birth,
-      :place_of_birth,
-      :debut_date
+      :throws
     ])
   end
 end
